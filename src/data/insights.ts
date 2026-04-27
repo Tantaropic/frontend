@@ -1,0 +1,58 @@
+import type { AIInsight } from "@/types";
+
+export const mockInsights: AIInsight[] = [
+  {
+    id: "insight_001",
+    type: "habit",
+    icon: "☕",
+    title: "عادة القهوة بتعمل معاك",
+    body: "كوباياتك الأسبوع ده كلفوا 475 جنيه — فكتتهم اشترتلك",
+    highlight: "23.75 جنيه صكوك",
+    timestamp: "2026-04-27T08:00:00Z",
+  },
+  {
+    id: "insight_002",
+    type: "milestone",
+    icon: "🎯",
+    title: "وصلت 13,000 جنيه!",
+    body: "محفظتك كسرت حاجز الـ 13 ألف جنيه. فلوسك بتكبر من غير ما تحس.",
+    highlight: "13,000 EGP",
+    timestamp: "2026-04-26T12:00:00Z",
+  },
+  {
+    id: "insight_003",
+    type: "nudge",
+    icon: "🚗",
+    title: "كل رحلة أوبر بتقربك",
+    body: "الشهر ده اتثمرت 64 جنيه من رحلاتك. كمّل كده وتصل لهدفك أسرع.",
+    highlight: "64 جنيه",
+    timestamp: "2026-04-25T09:00:00Z",
+  },
+  {
+    id: "insight_004",
+    type: "nudge",
+    icon: "📈",
+    title: "صندوق المؤشر شغّال معاك",
+    body: "صناديق المؤشر حققت 12.1% العام ده. فلوسك بتشتغل وانت بتنام.",
+    highlight: "+12.1%",
+    timestamp: "2026-04-24T10:00:00Z",
+  },
+  {
+    id: "insight_005",
+    type: "zakat",
+    icon: "🌙",
+    title: "تذكير الزكاة",
+    body: "محفظتك اتحسبت وزكاة هذا العام هي 325.25 جنيه. تبرع بسهولة من هنا.",
+    highlight: "325.25 جنيه",
+    timestamp: "2026-04-20T07:00:00Z",
+  },
+  {
+    id: "insight_006",
+    type: "habit",
+    icon: "🛒",
+    title: "مشترياتك من كارفور",
+    body: "آخر 4 زيارات لكارفور أضافت 32 جنيه لمحفظتك تلقائياً.",
+    highlight: "32 جنيه",
+    timestamp: "2026-04-19T15:00:00Z",
+  },
+];
