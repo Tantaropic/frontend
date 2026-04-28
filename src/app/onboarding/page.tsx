@@ -1,144 +1,107 @@
 "use client";
 
-import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
-import { ChevronRight } from "lucide-react";
+import { motion } from "framer-motion";
+import { ArrowRight } from "lucide-react";
 import { FloatingOrbs } from "@/components/decorative/FloatingOrbs";
 import { GeometricPattern } from "@/components/decorative/GeometricPattern";
-import { StepHero } from "./_steps/StepHero";
-import { StepSignup } from "./_steps/StepSignup";
-import { StepBank } from "./_steps/StepBank";
-import { StepRisk } from "./_steps/StepRisk";
-import { StepSettings } from "./_steps/StepSettings";
-import type { RiskProfile } from "@/types";
 
-// ─── Step dots ────────────────────────────────────────────────────────────────
-function StepDots({ current, total }: { current: number; total: number }) {
-  return (
-    <div className="flex items-center gap-2 justify-center">
-      {Array.from({ length: total }, (_, i) => (
-        <motion.div
-          key={i}
-          animate={{
-            width: i + 1 === current ? 24 : 8,
-            backgroundColor: i + 1 <= current ? "oklch(0.48 0.14 152)" : "oklch(0.88 0.008 95)",
-          }}
-          transition={{ duration: 0.3, ease: "easeOut" }}
-          className="h-2 rounded-full"
-        />
-      ))}
-    </div>
-  );
-}
-
-// ─── Step variants ─────────────────────────────────────────────────────────────
-const variants = {
-  enter: { opacity: 0, y: 20, scale: 0.98 },
-  center: { opacity: 1, y: 0, scale: 1 },
-  exit: { opacity: 0, y: -12, scale: 0.97 },
-};
-
-const TOTAL = 5;
+const pills = [
+  { label: "متوافق مع الشريعة", icon: "✓" },
+  { label: "من 50 جنيه فأكتر", icon: "💰" },
+  { label: "مصر والخليج", icon: "🌍" },
+];
 
 export default function OnboardingPage() {
   const router = useRouter();
-  const [step, setStep] = useState(1);
-  const [formData, setFormData] = useState({ name: "", email: "", phone: "" });
-  const [risk, setRisk] = useState<RiskProfile | null>(null);
-  const [roundupEnabled, setRoundupEnabled] = useState(true);
-  const [multiplier, setMultiplier] = useState<1 | 5 | 10>(5);
-
-  const next = () => setStep((s) => Math.min(s + 1, TOTAL));
-  const back = () => setStep((s) => Math.max(s - 1, 1));
-  const finish = () => router.push("/dashboard");
-
-  const updateForm = (field: "name" | "email" | "phone", value: string) =>
-    setFormData((prev) => ({ ...prev, [field]: value }));
 
   return (
-    <div className="relative min-h-screen flex flex-col overflow-hidden bg-hero-gradient">
-      {/* Decorative background */}
+    <div className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden bg-hero-gradient">
       <FloatingOrbs />
       <GeometricPattern />
 
-      {/* Header bar */}
-      <header className="relative z-10 flex items-center justify-between px-6 pt-6 pb-2">
-        {/* Back button */}
-        <motion.button
-          onClick={back}
-          animate={{ opacity: step > 1 ? 1 : 0, pointerEvents: step > 1 ? "auto" : "none" }}
-          transition={{ duration: 0.2 }}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          className="flex items-center gap-1.5 text-muted-foreground hover:text-foreground transition-colors text-sm font-medium"
-          aria-label="رجوع"
+      <div className="relative z-10 flex flex-col items-center text-center px-6 max-w-lg">
+        {/* Logo */}
+        <motion.div
+          initial={{ scale: 0, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+          className="w-20 h-20 rounded-3xl bg-sukuk-green flex items-center justify-center mb-8"
+          style={{ boxShadow: "0 12px 40px oklch(0.48 0.14 152 / 35%)" }}
         >
-          <ChevronRight size={18} />
-          <span>رجوع</span>
-        </motion.button>
+          <span className="text-white font-heading font-bold text-3xl">ص</span>
+        </motion.div>
 
-        {/* Step counter */}
-        <AnimatePresence mode="wait">
-          {step > 1 && (
-            <motion.p
-              key={step}
-              initial={{ opacity: 0, y: -4 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 4 }}
-              className="text-xs text-muted-foreground font-medium"
-            >
-              خطوة {step} من {TOTAL}
-            </motion.p>
-          )}
-        </AnimatePresence>
+        {/* Brand */}
+        <motion.p
+          initial={{ opacity: 0, y: -8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1, duration: 0.4 }}
+          className="text-muted-foreground text-sm font-medium mb-3 tracking-wide"
+        >
+          صكوك سويب
+        </motion.p>
 
-        {/* Brand wordmark */}
-        <p className="font-heading font-bold text-sm text-sukuk-green">صكوك سويب</p>
-      </header>
+        {/* Headline */}
+        <motion.h1
+          initial={{ opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+          className="font-heading font-bold text-4xl md:text-5xl text-foreground leading-tight mb-4"
+        >
+          فلوسك بتكبر
+          <br />
+          <span className="text-gradient-green">من غير ما تحس</span>
+        </motion.h1>
 
-      {/* Progress dots (steps 2–5) */}
-      <AnimatePresence>
-        {step > 1 && (
-          <motion.div
-            initial={{ opacity: 0, y: -8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0 }}
-            className="relative z-10 px-6 pt-2 pb-1"
+        {/* Subtitle */}
+        <motion.p
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.35, duration: 0.5 }}
+          className="text-muted-foreground text-lg leading-relaxed mb-10"
+        >
+          كل عملية شراء بتقربك لهدفك — استثمر فكتتك تلقائياً في صكوك إسلامية متوافقة مع الشريعة
+        </motion.p>
+
+        {/* Pills */}
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5, duration: 0.4 }}
+          className="flex flex-wrap gap-3 justify-center mb-10"
+        >
+          {pills.map((p) => (
+            <div key={p.label} className="glass flex items-center gap-2 px-4 py-2 rounded-full text-sm text-muted-foreground">
+              <span>{p.icon}</span>
+              <span>{p.label}</span>
+            </div>
+          ))}
+        </motion.div>
+
+        {/* CTA */}
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.65 }}>
+          <motion.button
+            onClick={() => router.push("/dashboard")}
+            whileHover={{ scale: 1.04, y: -2 }}
+            whileTap={{ scale: 0.97 }}
+            className="flex items-center gap-3 px-10 py-4 bg-sukuk-green text-white rounded-2xl font-heading font-semibold text-xl"
+            style={{ boxShadow: "0 10px 40px oklch(0.48 0.14 152 / 40%)" }}
           >
-            <StepDots current={step} total={TOTAL} />
-          </motion.div>
-        )}
-      </AnimatePresence>
+            <span>ابدأ الآن</span>
+            <ArrowRight size={22} className="rotate-180" />
+          </motion.button>
+        </motion.div>
 
-      {/* Step content */}
-      <main className="relative z-10 flex-1 flex flex-col">
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={step}
-            variants={variants}
-            initial="enter"
-            animate="center"
-            exit="exit"
-            transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-            className="flex-1 flex flex-col"
-          >
-            {step === 1 && <StepHero onNext={next} />}
-            {step === 2 && <StepSignup formData={formData} onChange={updateForm} onNext={next} />}
-            {step === 3 && <StepBank onNext={next} />}
-            {step === 4 && <StepRisk selected={risk} onSelect={setRisk} onNext={next} />}
-            {step === 5 && (
-              <StepSettings
-                enabled={roundupEnabled}
-                multiplier={multiplier}
-                onToggle={setRoundupEnabled}
-                onMultiplier={setMultiplier}
-                onFinish={finish}
-              />
-            )}
-          </motion.div>
-        </AnimatePresence>
-      </main>
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.9 }}
+          className="mt-6 text-xs text-muted-foreground"
+        >
+          لا حاجة لبطاقة ائتمان · مجاني للتجربة
+        </motion.p>
+      </div>
     </div>
   );
 }
