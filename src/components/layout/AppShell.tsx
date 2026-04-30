@@ -2,6 +2,8 @@
 
 import { Sidebar } from "./Sidebar";
 import { MobileNav } from "./MobileNav";
+import { FloatingOrbs } from "../decorative/FloatingOrbs";
+import { GeometricPattern } from "../decorative/GeometricPattern";
 
 interface AppShellProps {
   children: React.ReactNode;
@@ -13,11 +15,15 @@ interface AppShellProps {
  */
 export function AppShell({ children }: AppShellProps) {
   return (
-    <div className="min-h-screen bg-sukuk-gradient relative">
+    <div className="min-h-screen bg-sukuk-gradient relative overflow-hidden">
+      {/* Background decoration */}
+      <GeometricPattern />
+      <FloatingOrbs />
+
       <Sidebar />
       <MobileNav />
       {/* Content: offset by sidebar width on desktop, bottom nav on mobile */}
-      <main className="lg:ps-60 pb-20 lg:pb-0 min-h-screen">
+      <main className="relative lg:ps-60 pb-20 lg:pb-0 min-h-screen z-10">
         {children}
       </main>
     </div>

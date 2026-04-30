@@ -201,7 +201,7 @@
 
 ---
 
-## Page 4: Goals (`/goals`) 🔴
+## Page 4: Goals (`/goals`) 🟢
 
 ### Components to Build
 

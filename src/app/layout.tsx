@@ -32,6 +32,8 @@ export const metadata: Metadata = {
   ],
 };
 
+import { Toaster } from "@/components/ui/sonner";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -43,7 +45,10 @@ export default function RootLayout({
       dir="rtl"
       className={`${ibmPlexArabic.variable} ${tajawal.variable} h-full scroll-smooth`}
     >
-      <body className="min-h-full flex flex-col antialiased">{children}</body>
+      <body className="min-h-full flex flex-col antialiased">
+        {children}
+        <Toaster />
+      </body>
     </html>
   );
 }

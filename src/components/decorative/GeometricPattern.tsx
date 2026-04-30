@@ -6,9 +6,6 @@
  */
 export function GeometricPattern({ className = "" }: { className?: string }) {
   return (
-    <div
-      aria-hidden="true"
-      className={`geometric-pattern ${className}`}
-    />
+    <div aria-hidden="true" className={`geometric-pattern z-0 ${className}`} />
   );
 }
