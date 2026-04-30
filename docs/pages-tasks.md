@@ -245,7 +245,7 @@
 
 ---
 
-## Page 6: Insights (`/insights`) 🔴
+## Page 6: Insights (`/insights`) 🟢
 
 ### Components to Build
 

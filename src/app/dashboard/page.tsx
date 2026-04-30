@@ -1,13 +1,17 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { Plus, ArrowDownToLine, PauseCircle, FastForward } from "lucide-react";
 import { AppShell } from "@/components/layout/AppShell";
 import { BalanceCard } from "./_components/BalanceCard";
 import { PortfolioChart } from "./_components/PortfolioChart";
 import { InsightCards } from "./_components/InsightCards";
 import { totalReturnRate } from "@/data/assets";
+import { toast } from "sonner";
+import { GoalProgressWidget } from "./_components/GoalProgressWidget";
+import { RecentSweepsWidget } from "./_components/RecentSweepsWidget";
+import { ProjectedGrowthWidget } from "./_components/ProjectedGrowthWidget";
 
 // Mock purchases for simulate button
 const MOCK_PURCHASES = [
@@ -58,6 +62,11 @@ export default function DashboardPage() {
   const handleTimeTravel = useCallback(() => {
     if (timeTraveling) return;
     setTimeTraveling(true);
+    toast("تقدم سنة كاملة!", {
+      description: "جاري احتساب نمو المحفظة...",
+      icon: "📈",
+      duration: 2500,
+    });
     // Simulate 1 year of 11.3% growth
     setBalance((b) => Math.round(b * (1 + totalReturnRate / 100)));
     setReturnRate((r) => +(r * 1.05).toFixed(1)); // compound slightly
@@ -105,77 +114,67 @@ export default function DashboardPage() {
           lastSimulated={lastSimulated}
         />
 
-        {/* Chart + Quick Actions grid */}
+        {/* Chart + Quick Actions & Goals grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {/* Portfolio Chart — takes 2/3 */}
           <div className="md:col-span-2">
             <PortfolioChart />
           </div>
 
-          {/* Quick Actions — takes 1/3 */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3, duration: 0.5 }}
-            className="bg-white/70 backdrop-blur-sm border border-border rounded-2xl p-5 flex flex-col gap-3"
-          >
-            <h3 className="font-heading font-bold text-base text-foreground mb-1">
-              إجراءات سريعة
-            </h3>
-            {QUICK_ACTIONS.map(({ icon: Icon, label, color }) => (
-              <motion.button
-                key={label}
-                whileHover={{ scale: 1.03, x: -2 }}
-                whileTap={{ scale: 0.97 }}
-                className={`flex items-center gap-3 px-4 py-3 rounded-xl border text-sm font-semibold transition-all duration-150 ${color}`}
-              >
-                <Icon size={16} />
-                <span>{label}</span>
-              </motion.button>
-            ))}
+          {/* Quick Actions & Goals — takes 1/3 */}
+          <div className="flex flex-col gap-4">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3, duration: 0.5 }}
+              className="bg-white/70 backdrop-blur-sm border border-border rounded-2xl p-5 flex flex-col gap-3"
+            >
+              <h3 className="font-heading font-bold text-base text-foreground mb-1">
+                إجراءات سريعة
+              </h3>
+              {QUICK_ACTIONS.map(({ icon: Icon, label, color }) => (
+                <motion.button
+                  key={label}
+                  whileHover={{ scale: 1.03, x: -2 }}
+                  whileTap={{ scale: 0.97 }}
+                  className={`flex items-center gap-3 px-4 py-3 rounded-xl border text-sm font-semibold transition-all duration-150 ${color}`}
+                >
+                  <Icon size={16} />
+                  <span>{label}</span>
+                </motion.button>
+              ))}
 
-            {/* Sharia badge */}
-            <div className="mt-auto pt-4 border-t border-border text-center">
-              <p className="text-xs text-muted-foreground">
-                🕌 100% متوافق مع الشريعة
-              </p>
-              <p className="text-[10px] text-muted-foreground/60 mt-0.5">
-                معتمد من هيئة الفتوى
-              </p>
-            </div>
-          </motion.div>
+              {/* Sharia badge */}
+              <div className="mt-auto pt-4 border-t border-border text-center">
+                <p className="text-xs text-muted-foreground">
+                  🕌 100% متوافق مع الشريعة
+                </p>
+                <p className="text-[10px] text-muted-foreground/60 mt-0.5">
+                  معتمد من هيئة الفتوى
+                </p>
+              </div>
+            </motion.div>
+
+            <GoalProgressWidget />
+          </div>
+        </div>
+
+        {/* Growth & Recent Sweeps Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <ProjectedGrowthWidget />
+          <RecentSweepsWidget />
         </div>
 
         {/* Insight Cards */}
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4, duration: 0.5 }}
+          transition={{ delay: 0.5, duration: 0.5 }}
         >
           <InsightCards />
         </motion.div>
 
-        {/* Time-travel notification */}
-        <AnimatePresence>
-          {timeTraveling && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 10 }}
-              className="fixed bottom-24 lg:bottom-6 inset-s-1/2 -translate-x-1/2 z-50 glass-strong border border-sukuk-green/30 rounded-2xl px-6 py-3 flex items-center gap-3 shadow-xl"
-            >
-              <span className="text-sukuk-green animate-pulse text-xl">📈</span>
-              <div>
-                <p className="font-heading font-semibold text-sm text-foreground">
-                  تقدم سنة كاملة!
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  جاري احتساب نمو المحفظة...
-                </p>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+
       </div>
     </AppShell>
   );

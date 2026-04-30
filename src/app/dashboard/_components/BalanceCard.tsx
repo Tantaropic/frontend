@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { TrendingUp, Zap } from "lucide-react";
 import { gsap } from "gsap";
+import { toast } from "sonner";
 
 interface BalanceCardProps {
   balance: number;
@@ -33,6 +34,15 @@ export function BalanceCard({ balance, returnRate, onSimulate, lastSimulated }: 
       },
     });
   }, [balance]);
+
+  useEffect(() => {
+    if (lastSimulated) {
+      toast.success(lastSimulated.merchant, {
+        description: `+${lastSimulated.invested} جنيه مُستثمرة ✓`,
+        duration: 3000,
+      });
+    }
+  }, [lastSimulated]);
 
   return (
     <motion.div
@@ -88,20 +98,7 @@ export function BalanceCard({ balance, returnRate, onSimulate, lastSimulated }: 
           <span>محاكاة عملية شراء</span>
         </motion.button>
 
-        {/* Simulated toast */}
-        {lastSimulated && (
-          <motion.div
-            key={lastSimulated.merchant}
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0 }}
-            className="mt-3 bg-white/10 rounded-xl px-4 py-2 text-xs text-white/80"
-          >
-            <span className="font-semibold text-white">{lastSimulated.merchant}</span>
-            {" ← "}
-            <span className="text-emerald-300 font-semibold">+{lastSimulated.invested} جنيه مُستثمرة ✓</span>
-          </motion.div>
-        )}
+
       </div>
     </motion.div>
   );

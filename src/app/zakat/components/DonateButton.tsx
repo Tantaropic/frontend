@@ -13,7 +13,6 @@ export function DonateButton({ amount }: DonateButtonProps) {
   const handleDonate = () => {
     toast.success("تم إخراج زكاتك بنجاح", {
       description: `تقبل الله منك. تم خصم ${amount} جنيه وتوجيهها للمصارف الشرعية.`,
-      position: "top-center",
       duration: 5000,
     });
   };
@@ -24,7 +23,8 @@ export function DonateButton({ amount }: DonateButtonProps) {
         طهر أموالك وأخرج زكاتك
       </h3>
       <p className="text-sm text-muted-foreground mb-6">
-        بضغطة زر، يمكنك إخراج زكاتك المستحقة ليتم توجيهها إلى مصارف الزكاة المعتمدة.
+        بضغطة زر، يمكنك إخراج زكاتك المستحقة ليتم توجيهها إلى مصارف الزكاة
+        المعتمدة.
       </p>
       <Button
         onClick={handleDonate}
