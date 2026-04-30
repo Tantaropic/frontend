@@ -46,9 +46,9 @@ export function BalanceCard({ balance, returnRate, onSimulate, lastSimulated }: 
       }}
     >
       {/* Background orbs */}
-      <div className="absolute -top-16 -end-8 w-56 h-56 rounded-full pointer-events-none"
+      <div className="absolute -top-16 -inset-e-8 w-56 h-56 rounded-full pointer-events-none"
         style={{ background: "radial-gradient(circle, oklch(1 0 0 / 12%), transparent 70%)" }} />
-      <div className="absolute -bottom-10 -start-4 w-40 h-40 rounded-full pointer-events-none"
+      <div className="absolute -bottom-10 -inset-s-4 w-40 h-40 rounded-full pointer-events-none"
         style={{ background: "radial-gradient(circle, oklch(1 0 0 / 8%), transparent 70%)" }} />
 
       <div className="relative z-10">

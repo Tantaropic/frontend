@@ -45,7 +45,7 @@ export function DailySummaryCard({
           </div>
         </div>
         <div className="flex items-center gap-3">
-          <div className="flex flex-col items-end hidden sm:flex">
+          <div className="flex flex-col items-end sm:flex">
             <span className="text-sm font-semibold text-sukuk-green tabular-nums">
               +{totalInvested} جنيه
             </span>

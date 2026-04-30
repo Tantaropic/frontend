@@ -38,7 +38,7 @@ export function AnimatedProgressBar({
         <motion.div
           className={cn(
             "h-full rounded-full origin-right",
-            !color && "bg-gradient-to-l from-sukuk-green to-sukuk-green-light",
+            !color && "bg-linear-to-l from-sukuk-green to-sukuk-green-light",
             barClassName
           )}
           style={color ? { background: color } : undefined}
@@ -55,7 +55,7 @@ export function AnimatedProgressBar({
       {/* Label */}
       {showLabel && (
         <motion.span
-          className="absolute -top-5 end-0 text-xs font-medium text-sukuk-green tabular-nums"
+          className="absolute -top-5 inset-e-0 text-xs font-medium text-sukuk-green tabular-nums"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: delay + 0.6, duration: 0.3 }}

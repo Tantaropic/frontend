@@ -144,7 +144,7 @@ export default function DashboardPage() {
                 initial={{ opacity: 0, scale: 0.9, y: 20 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.95, y: 10 }}
-                className="fixed bottom-24 lg:bottom-6 start-1/2 -translate-x-1/2 z-50 glass-strong border border-sukuk-green/30 rounded-2xl px-6 py-3 flex items-center gap-3 shadow-xl"
+                className="fixed bottom-24 lg:bottom-6 inset-s-1/2 -translate-x-1/2 z-50 glass-strong border border-sukuk-green/30 rounded-2xl px-6 py-3 flex items-center gap-3 shadow-xl"
               >
                 <span className="text-sukuk-green animate-pulse text-xl">📈</span>
                 <div>
