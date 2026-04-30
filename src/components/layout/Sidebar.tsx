@@ -32,7 +32,7 @@ export function Sidebar() {
       {/* Logo */}
       <div className="flex items-center gap-3 px-5 py-6 border-b border-border">
         <div className="w-9 h-9 rounded-xl bg-sukuk-green flex items-center justify-center text-white font-heading font-bold text-sm">
-          ص
+          فكة
         </div>
         <div>
           <p className="font-heading font-bold text-sm text-foreground">فكة</p>

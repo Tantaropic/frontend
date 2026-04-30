@@ -20,7 +20,7 @@ export function StepHero({ onNext }: { onNext: () => void }) {
         className="w-20 h-20 rounded-3xl bg-sukuk-green flex items-center justify-center mb-8 shadow-lg"
         style={{ boxShadow: "0 12px 40px oklch(0.48 0.14 152 / 30%)" }}
       >
-        <span className="text-white font-heading font-bold text-3xl">ص</span>
+        <span className="text-white font-heading font-bold text-3xl">فكة</span>
       </motion.div>
 
       {/* Heading */}
