@@ -34,8 +34,15 @@ export function SpendingBehaviorChart() {
 
       <div className="h-[300px] w-full" dir="ltr">
         <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={data} margin={{ top: 10, right: 10, left: 10, bottom: 20 }}>
-            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border)" />
+          <BarChart
+            data={data}
+            margin={{ top: 10, right: 10, left: 10, bottom: 20 }}
+          >
+            <CartesianGrid
+              strokeDasharray="3 3"
+              vertical={false}
+              stroke="var(--border)"
+            />
             <XAxis
               dataKey="name"
               axisLine={false}
@@ -58,7 +65,8 @@ export function SpendingBehaviorChart() {
                 backgroundColor: "var(--background)",
                 boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1)",
               }}
-              formatter={(value: number) => [`${value} جنيه`, "الإنفاق"]}
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              formatter={(value: any) => [`${value || 0} جنيه`, "الإنفاق"]}
             />
             <Bar dataKey="amount" radius={[6, 6, 0, 0]} maxBarSize={50}>
               {data.map((entry, index) => (
