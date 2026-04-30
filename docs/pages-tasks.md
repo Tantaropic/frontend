@@ -223,7 +223,7 @@
 
 ---
 
-## Page 5: Zakat (`/zakat`) 🔴
+## Page 5: Zakat (`/zakat`) 🟢
 
 ### Components to Build
 

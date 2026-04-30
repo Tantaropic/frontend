@@ -8,8 +8,6 @@ import { BalanceCard } from "./_components/BalanceCard";
 import { PortfolioChart } from "./_components/PortfolioChart";
 import { InsightCards } from "./_components/InsightCards";
 import { totalReturnRate } from "@/data/assets";
-import { FloatingOrbs } from "@/components/decorative/FloatingOrbs";
-import { GeometricPattern } from "@/components/decorative/GeometricPattern";
 
 // Mock purchases for simulate button
 const MOCK_PURCHASES = [
@@ -68,10 +66,6 @@ export default function DashboardPage() {
 
   return (
     <AppShell>
-      <div className="z-1">
-        <FloatingOrbs />
-        <GeometricPattern />
-      </div>
       <div className="relative z-10 px-4 md:px-6 py-6 max-w-4xl mx-auto space-y-6">
         {/* Header */}
         <motion.div
