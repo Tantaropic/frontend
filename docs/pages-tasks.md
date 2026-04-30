@@ -17,7 +17,7 @@
 
 ---
 
-## Page 1: Onboarding (`/onboarding`) ⭐ 🔴
+## Page 1: Onboarding (`/onboarding`) 🟢
 
 **Layout:** Full-page (no sidebar). `FloatingOrbs` + `GeometricPattern` background.
 
@@ -149,7 +149,7 @@
 
 ---
 
-## Page 2: Transactions (`/transactions`) 🔴
+## Page 2: Transactions (`/transactions`) 🟢
 
 **Layout:** App shell with Sidebar + MobileNav. Page content scrolls.
 
@@ -174,7 +174,7 @@
 
 ---
 
-## Page 3: Dashboard (`/dashboard`) ⭐ 🔴
+## Page 3: Dashboard (`/dashboard`) 🟢
 
 > **Most visually impressive page — spend the most time here.**
 

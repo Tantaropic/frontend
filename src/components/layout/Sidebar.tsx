@@ -13,11 +13,11 @@ import {
 } from "lucide-react";
 
 const navItems = [
-  { href: "/dashboard",    labelAr: "لوحة التحكم",   icon: LayoutDashboard },
-  { href: "/transactions", labelAr: "المعاملات",      icon: ArrowLeftRight },
-  { href: "/goals",        labelAr: "الأهداف",        icon: Target },
-  { href: "/zakat",        labelAr: "الزكاة",         icon: Moon },
-  { href: "/insights",     labelAr: "رؤى وتحليلات",  icon: Lightbulb },
+  { href: "/dashboard", labelAr: "لوحة التحكم", icon: LayoutDashboard },
+  { href: "/transactions", labelAr: "المعاملات", icon: ArrowLeftRight },
+  { href: "/goals", labelAr: "الأهداف", icon: Target },
+  { href: "/zakat", labelAr: "الزكاة", icon: Moon },
+  { href: "/insights", labelAr: "رؤى وتحليلات", icon: Lightbulb },
 ];
 
 /**
@@ -35,15 +35,16 @@ export function Sidebar() {
           ص
         </div>
         <div>
-          <p className="font-heading font-bold text-sm text-foreground">صكوك سويب</p>
-          <p className="text-[11px] text-muted-foreground">استثمر فكتتك</p>
+          <p className="font-heading font-bold text-sm text-foreground">فكة</p>
+          <p className="text-[11px] text-muted-foreground">استثمر فكتك</p>
         </div>
       </div>
 
       {/* Nav Items */}
       <nav className="flex-1 px-3 py-4 space-y-1">
         {navItems.map((item) => {
-          const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
+          const isActive =
+            pathname === item.href || pathname.startsWith(item.href + "/");
           const Icon = item.icon;
 
           return (
@@ -60,7 +61,7 @@ export function Sidebar() {
                   "relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-colors duration-150",
                   isActive
                     ? "text-sukuk-green font-semibold"
-                    : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted/50",
                 )}
               >
                 <Icon size={18} strokeWidth={isActive ? 2.2 : 1.8} />

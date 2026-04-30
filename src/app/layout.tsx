@@ -17,10 +17,19 @@ const tajawal = Tajawal({
 });
 
 export const metadata: Metadata = {
-  title: "صكوك سويب — استثمر فكتتك",
+  title: "فكة — استثمر فكتك",
   description:
-    "منصة الاستثمار الذكي الشرعي — استثمر الفكة من مشترياتك اليومية في صكوك وأدوات مالية متوافقة مع أحكام الشريعة الإسلامية",
-  keywords: ["استثمار", "صكوك", "شريعة", "مصر", "MENA", "fintech", "micro-investing"],
+    "منصة الاستثمار الذكي — استثمر الفكة من مشترياتك اليومية في الأسهم وأدوات مالية متوافقة مع أحكام الشريعة الإسلامية",
+  keywords: [
+    "استثمار",
+    "فكة",
+    "صكوك",
+    "شريعة",
+    "مصر",
+    "MENA",
+    "fintech",
+    "micro-investing",
+  ],
 };
 
 export default function RootLayout({
@@ -34,9 +43,7 @@ export default function RootLayout({
       dir="rtl"
       className={`${ibmPlexArabic.variable} ${tajawal.variable} h-full scroll-smooth`}
     >
-      <body className="min-h-full flex flex-col antialiased">
-        {children}
-      </body>
+      <body className="min-h-full flex flex-col antialiased">{children}</body>
     </html>
   );
 }

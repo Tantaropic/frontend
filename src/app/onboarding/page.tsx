@@ -8,8 +8,8 @@ import { GeometricPattern } from "@/components/decorative/GeometricPattern";
 
 const pills = [
   { label: "متوافق مع الشريعة", icon: "✓" },
-  { label: "من 50 جنيه فأكتر", icon: "💰" },
-  { label: "مصر والخليج", icon: "🌍" },
+  { label: "فكتك النهاردة ثروتك للمستقبل", icon: "💰" },
+  { label: "الان بمصر وقريبًا بالخليج", icon: "🌍" },
 ];
 
 export default function OnboardingPage() {
@@ -29,18 +29,10 @@ export default function OnboardingPage() {
           className="w-20 h-20 rounded-3xl bg-sukuk-green flex items-center justify-center mb-8"
           style={{ boxShadow: "0 12px 40px oklch(0.48 0.14 152 / 35%)" }}
         >
-          <span className="text-white font-heading font-bold text-3xl">ص</span>
+          <span className="text-white font-heading font-bold text-3xl">
+            فكة
+          </span>
         </motion.div>
-
-        {/* Brand */}
-        <motion.p
-          initial={{ opacity: 0, y: -8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1, duration: 0.4 }}
-          className="text-muted-foreground text-sm font-medium mb-3 tracking-wide"
-        >
-          صكوك سويب
-        </motion.p>
 
         {/* Headline */}
         <motion.h1
@@ -61,7 +53,8 @@ export default function OnboardingPage() {
           transition={{ delay: 0.35, duration: 0.5 }}
           className="text-muted-foreground text-lg leading-relaxed mb-10"
         >
-          كل عملية شراء بتقربك لهدفك — استثمر فكتتك تلقائياً في صكوك إسلامية متوافقة مع الشريعة
+          كل عملية شراء بتقربك لهدفك — استثمر فكتك تلقائياً في صكوك إسلامية
+          متوافقة مع الشريعة
         </motion.p>
 
         {/* Pills */}
@@ -72,7 +65,10 @@ export default function OnboardingPage() {
           className="flex flex-wrap gap-3 justify-center mb-10"
         >
           {pills.map((p) => (
-            <div key={p.label} className="glass flex items-center gap-2 px-4 py-2 rounded-full text-sm text-muted-foreground">
+            <div
+              key={p.label}
+              className="glass flex items-center gap-2 px-4 py-2 rounded-full text-sm text-muted-foreground"
+            >
               <span>{p.icon}</span>
               <span>{p.label}</span>
             </div>
@@ -80,7 +76,11 @@ export default function OnboardingPage() {
         </motion.div>
 
         {/* CTA */}
-        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.65 }}>
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.65 }}
+        >
           <motion.button
             onClick={() => router.push("/dashboard")}
             whileHover={{ scale: 1.04, y: -2 }}
