@@ -33,6 +33,8 @@ export const metadata: Metadata = {
 };
 
 import { Toaster } from "@/components/ui/sonner";
+import { GlobalLoaderProvider } from "@/components/layout/GlobalLoaderContext";
+import { GlobalLoader } from "@/components/layout/GlobalLoader";
 
 export default function RootLayout({
   children,
@@ -46,8 +48,11 @@ export default function RootLayout({
       className={`${ibmPlexArabic.variable} ${tajawal.variable} h-full scroll-smooth`}
     >
       <body className="min-h-full flex flex-col antialiased">
-        {children}
-        <Toaster position="top-center" />
+        <GlobalLoaderProvider>
+          <GlobalLoader />
+          {children}
+          <Toaster position="top-center" theme="light" />
+        </GlobalLoaderProvider>
       </body>
     </html>
   );

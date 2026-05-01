@@ -7,7 +7,10 @@ import Link from "next/link";
 
 export function GoalProgressWidget() {
   const topGoal = mockGoals[0];
-  const progress = Math.min((topGoal.currentAmount / topGoal.targetAmount) * 100, 100);
+  const progress = Math.min(
+    (topGoal.currentAmount / topGoal.targetAmount) * 100,
+    100,
+  );
 
   return (
     <motion.div
@@ -21,7 +24,10 @@ export function GoalProgressWidget() {
           <Target className="w-4 h-4 text-sukuk-green" />
           هدفك الحالي
         </h3>
-        <Link href="/goals" className="text-xs font-semibold text-sukuk-green hover:underline flex items-center">
+        <Link
+          href="/goals"
+          className="text-xs font-semibold text-sukuk-green hover:underline flex items-center"
+        >
           عرض الكل
           <ChevronLeft className="w-3 h-3 ms-1" />
         </Link>
@@ -32,7 +38,8 @@ export function GoalProgressWidget() {
         <div>
           <p className="font-heading font-semibold text-sm">{topGoal.title}</p>
           <p className="text-xs text-muted-foreground">
-            الباقي {(topGoal.targetAmount - topGoal.currentAmount).toLocaleString()} ج
+            الباقي{" "}
+            {(topGoal.targetAmount - topGoal.currentAmount).toLocaleString()} ج
           </p>
         </div>
       </div>
@@ -40,12 +47,14 @@ export function GoalProgressWidget() {
       <div className="mt-auto">
         <div className="flex justify-between text-xs font-medium mb-1.5">
           <span className="text-sukuk-green">{progress.toFixed(1)}%</span>
-          <span className="text-muted-foreground">الهدف: {topGoal.targetAmount.toLocaleString()}</span>
+          <span className="text-muted-foreground">
+            الهدف: {topGoal.targetAmount.toLocaleString()}
+          </span>
         </div>
         <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
           <motion.div
             className="h-full rounded-full"
-            style={{ backgroundColor: topGoal.color, originX: 0 }}
+            style={{ backgroundColor: topGoal.color, originX: 1 }}
             initial={{ scaleX: 0 }}
             animate={{ scaleX: progress / 100 }}
             transition={{ delay: 0.5, duration: 1, ease: "easeOut" }}
