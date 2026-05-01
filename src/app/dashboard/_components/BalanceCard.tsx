@@ -6,6 +6,8 @@ import { TrendingUp, Zap } from "lucide-react";
 import { gsap } from "gsap";
 import { toast } from "sonner";
 
+import { useSimulation } from "@/components/simulation/SimulationContext";
+
 interface BalanceCardProps {
   balance: number;
   returnRate: number;
@@ -21,6 +23,18 @@ export function BalanceCard({
 }: BalanceCardProps) {
   const balanceRef = useRef<HTMLSpanElement>(null);
   const prevBalance = useRef(0);
+  const { isSimulating } = useSimulation();
+  const [isSparkling, setIsSparkling] = useState(false);
+
+  useEffect(() => {
+    const handleInvestment = () => {
+      setIsSparkling(true);
+      setTimeout(() => setIsSparkling(false), 3000);
+    };
+
+    window.addEventListener("simulation:asset-investment", handleInvestment);
+    return () => window.removeEventListener("simulation:asset-investment", handleInvestment);
+  }, []);
 
   useEffect(() => {
     if (!balanceRef.current) return;
@@ -63,13 +77,19 @@ export function BalanceCard({
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
+      animate={{ 
+        opacity: 1, 
+        y: 0,
+        scale: isSparkling ? [1, 1.05, 1] : 1
+      }}
       transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
       className="relative overflow-hidden rounded-3xl p-6 md:p-8 text-white"
       style={{
         background:
           "linear-gradient(135deg, oklch(0.38 0.15 152), oklch(0.50 0.14 152) 50%, oklch(0.44 0.13 165))",
-        boxShadow: "0 20px 60px oklch(0.48 0.14 152 / 35%)",
+        boxShadow: isSparkling 
+          ? "0 30px 80px oklch(0.60 0.20 152 / 60%)" 
+          : "0 20px 60px oklch(0.48 0.14 152 / 35%)",
       }}
     >
       {/* Background orbs */}
@@ -91,14 +111,29 @@ export function BalanceCard({
       <div className="relative z-10">
         {/* Balance */}
         <p className="text-white/65 text-sm font-medium mb-1">إجمالي المحفظة</p>
-        <div className="flex items-baseline gap-2 mb-1">
-          <span
+        <div className="flex items-baseline gap-2 mb-1 relative">
+          <motion.span
             ref={balanceRef}
+            animate={isSparkling ? { color: ["#fff", "#34d399", "#fff"] } : {}}
             className="font-heading font-bold text-5xl md:text-6xl tabular-nums"
           >
             0
-          </span>
+          </motion.span>
           <span className="text-2xl font-medium text-white/80">جنيه</span>
+
+          {/* Sparkle effect */}
+          <AnimatePresence>
+            {isSparkling && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0, rotate: -45 }}
+                animate={{ opacity: 1, scale: 1, rotate: 0 }}
+                exit={{ opacity: 0, scale: 0 }}
+                className="absolute -top-6 -right-6 text-yellow-300"
+              >
+                <Zap size={32} className="fill-yellow-300 shadow-glow" />
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
         <div className="flex items-center gap-1.5 text-emerald-300 mb-6">
           <TrendingUp size={14} />
@@ -150,12 +185,17 @@ export function BalanceCard({
         {/* Simulate button */}
         <motion.button
           onClick={onSimulate}
+          disabled={isSimulating}
           whileHover={{ scale: 1.03, y: -1 }}
           whileTap={{ scale: 0.97 }}
-          className="flex items-center gap-2 bg-white/15 hover:bg-white/25 border border-white/25 rounded-xl px-4 py-2.5 text-sm font-semibold transition-colors duration-200"
+          className={`flex items-center gap-2 border rounded-xl px-4 py-2.5 text-sm font-semibold transition-all duration-200 ${
+            isSimulating
+            ? "bg-white/5 border-white/5 text-white/20"
+            : "bg-white/15 hover:bg-white/25 border-white/25 text-white"
+          }`}
         >
-          <Zap size={16} className="text-yellow-300" />
-          <span>محاكاة عملية شراء</span>
+          <Zap size={16} className={isSimulating ? "text-white/20" : "text-yellow-300"} />
+          <span>{isSimulating ? "جاري معالجة العملية..." : "محاكاة عملية شراء"}</span>
         </motion.button>
       </div>
     </motion.div>

@@ -6,7 +6,20 @@ import { Clock, ChevronLeft } from "lucide-react";
 import Link from "next/link";
 import { formatEGP } from "@/lib/utils";
 
+import { useEffect, useState } from "react";
+
 export function RecentSweepsWidget() {
+  const [isPulsing, setIsPulsing] = useState(false);
+
+  useEffect(() => {
+    const handleRoundup = () => {
+      setIsPulsing(true);
+      setTimeout(() => setIsPulsing(false), 2000);
+    };
+    window.addEventListener("simulation:roundup-engine", handleRoundup);
+    return () => window.removeEventListener("simulation:roundup-engine", handleRoundup);
+  }, []);
+
   // Get latest 3 transactions that actually invested something
   const recentSweeps = mockTransactions
     .filter((t) => t.investedAmount > 0)
@@ -15,13 +28,18 @@ export function RecentSweepsWidget() {
   return (
     <motion.div
       initial={{ opacity: 0, y: 15 }}
-      animate={{ opacity: 1, y: 0 }}
+      animate={{ 
+        opacity: 1, 
+        y: 0,
+        scale: isPulsing ? [1, 1.02, 1] : 1,
+        borderColor: isPulsing ? "rgba(5, 150, 105, 0.5)" : "rgba(0, 0, 0, 0.1)"
+      }}
       transition={{ delay: 0.4, duration: 0.5 }}
-      className="bg-white/70 backdrop-blur-sm border border-border rounded-2xl p-5 flex flex-col h-full"
+      className={`bg-white/70 backdrop-blur-sm border rounded-2xl p-5 flex flex-col h-full transition-colors duration-300 ${isPulsing ? "ring-2 ring-sukuk-green/20 shadow-lg" : ""}`}
     >
       <div className="flex items-center justify-between mb-4">
         <h3 className="font-heading font-bold text-base text-foreground flex items-center gap-2">
-          <Clock className="w-4 h-4 text-sukuk-green" />
+          <Clock className={`w-4 h-4 transition-colors ${isPulsing ? "text-sukuk-green" : "text-muted-foreground"}`} />
           أحدث الاستثمارات
         </h3>
         <Link href="/transactions" className="text-xs font-semibold text-sukuk-green hover:underline flex items-center">
@@ -30,7 +48,7 @@ export function RecentSweepsWidget() {
         </Link>
       </div>
 
-      <div className="space-y-3 flex-1">
+      <div className="space-y-3 flex-1 relative">
         {recentSweeps.map((sweep, i) => (
           <motion.div
             key={sweep.id}
@@ -53,7 +71,7 @@ export function RecentSweepsWidget() {
               </div>
             </div>
             <div className="text-end">
-              <span className="text-xs font-bold text-sukuk-green bg-sukuk-green/10 px-2 py-1 rounded-md">
+              <span className={`text-xs font-bold px-2.5 py-1 rounded-md transition-colors ${isPulsing && i === 0 ? "bg-sukuk-green text-white" : "text-sukuk-green bg-sukuk-green/10"}`}>
                 +{formatEGP(sweep.investedAmount)}
               </span>
             </div>

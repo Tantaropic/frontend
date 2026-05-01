@@ -9,14 +9,16 @@ export interface SimulationStep {
   label: string;
   description: string;
   status: SimulationStepStatus;
-  icon?: string;
+  payload?: Record<string, unknown>;
 }
 
 interface SimulationContextProps {
   isSimulating: boolean;
-  currentStepIndex: number;
+  isXRayMode: boolean;
+  setIsXRayMode: (val: boolean) => void;
+  currentStepId: string | null;
   steps: SimulationStep[];
-  triggerSimulation: (onComplete: () => void) => void;
+  triggerSimulation: (onComplete?: () => void) => void;
 }
 
 const SimulationContext = createContext<SimulationContextProps | undefined>(
@@ -25,55 +27,71 @@ const SimulationContext = createContext<SimulationContextProps | undefined>(
 
 const INITIAL_STEPS: SimulationStep[] = [
   {
-    id: "price-feed",
-    label: "Price Feed Service",
-    description: "جاري مزامنة الأسعار من Mock Bank API...",
+    id: "bank-api",
+    label: "واجهة البنك (API)",
+    description: "تم رصد عملية شراء جديدة عند نقطة البيع.",
     status: "pending",
-    icon: "📡",
+    payload: { txn_id: "TXN_7721", amount: 46.50, merchant: "Starbucks" }
+  },
+  {
+    id: "webhook",
+    label: "مستقبل البيانات",
+    description: "استلام بيانات العملية المشفرة من بوابة الدفع.",
+    status: "pending",
+    payload: { status: "received", provider: "Stripe/Fawry" }
+  },
+  {
+    id: "roundup-engine",
+    label: "محرك التقريب",
+    description: "حساب الفكة لأقرب 10 جنيهات مصرية.",
+    status: "pending",
+    payload: { original: 46.50, rounded: 50.00, sweep: 3.50 }
   },
   {
     id: "fee-engine",
-    label: "Fee Engine",
-    description: "احتساب رسوم (1.5%) وتوزيع أرباح المحفظة...",
+    label: "محرك الرسوم",
+    description: "خصم مصاريف التشغيل (1.5%) وتجهيز المبلغ.",
     status: "pending",
-    icon: "⚙️",
+    payload: { fee: 0.05, net_investment: 3.45 }
   },
   {
-    id: "ai-engine",
-    label: "AI Engine",
-    description: "تحليل الأداء عبر Azure OpenAI وتوليد الأفكار...",
+    id: "ai-emotional-engine",
+    label: "محرك الذكاء الاصطناعي",
+    description: "تحليل نمط الإنفاق وتقديم نصيحة ذكية.",
     status: "pending",
-    icon: "🧠",
+    payload: { mood: "thrifty", nudge: "القهوة طاقة، لكن الصكوك حرية!" }
   },
   {
-    id: "sse-broadcast",
-    label: "SSE Broadcast",
-    description: "تحديث واجهة المستثمر بالبيانات الجديدة...",
+    id: "asset-investment",
+    label: "استثمار الأصول",
+    description: "شراء وحدات صكوك في السوق الثانوية.",
     status: "pending",
-    icon: "🚀",
-  },
+    payload: { units: 0.12, ticker: "EGP_SUKUK_26" }
+  }
 ];
 
 export function SimulationProvider({ children }: { children: React.ReactNode }) {
   const [isSimulating, setIsSimulating] = useState(false);
-  const [currentStepIndex, setCurrentStepIndex] = useState(0);
+  const [isXRayMode, setIsXRayMode] = useState(false);
+  const [currentStepId, setCurrentStepId] = useState<string | null>(null);
   const [steps, setSteps] = useState<SimulationStep[]>(INITIAL_STEPS);
 
-  const triggerSimulation = useCallback(async (onComplete: () => void) => {
+  const triggerSimulation = useCallback(async (onComplete?: () => void) => {
     setIsSimulating(true);
-    setCurrentStepIndex(0);
+    setCurrentStepId(null);
     setSteps(INITIAL_STEPS.map((s) => ({ ...s, status: "pending" })));
 
-    // Simulation loop
+    // Simulation sequence
     for (let i = 0; i < INITIAL_STEPS.length; i++) {
-      setCurrentStepIndex(i);
+      const step = INITIAL_STEPS[i];
+      setCurrentStepId(step.id);
       setSteps((prev) =>
         prev.map((s, idx) =>
           idx === i ? { ...s, status: "active" } : s
         )
       );
 
-      // Wait for each step
+      // Duration for each step to visualize packet travel
       await new Promise((resolve) => setTimeout(resolve, 1500));
 
       setSteps((prev) =>
@@ -81,18 +99,29 @@ export function SimulationProvider({ children }: { children: React.ReactNode }) 
           idx === i ? { ...s, status: "completed" } : s
         )
       );
+
+      // Special event broadcast for widgets
+      window.dispatchEvent(new CustomEvent(`simulation:${step.id}`, { 
+        detail: step.payload 
+      }));
     }
 
-    // Final short pause before finishing
-    await new Promise((resolve) => setTimeout(resolve, 500));
-    
+    await new Promise((resolve) => setTimeout(resolve, 1000));
     setIsSimulating(false);
-    onComplete();
+    setCurrentStepId(null);
+    onComplete?.();
   }, []);
 
   return (
     <SimulationContext.Provider
-      value={{ isSimulating, currentStepIndex, steps, triggerSimulation }}
+      value={{ 
+        isSimulating, 
+        isXRayMode, 
+        setIsXRayMode, 
+        currentStepId, 
+        steps, 
+        triggerSimulation 
+      }}
     >
       {children}
     </SimulationContext.Provider>
