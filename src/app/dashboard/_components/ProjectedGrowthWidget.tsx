@@ -7,21 +7,21 @@ import { formatEGP } from "@/lib/utils";
 import { Calculator } from "lucide-react";
 
 export function ProjectedGrowthWidget() {
-  // State for monthly investment (slider)
-  const [monthlyContribution, setMonthlyContribution] = useState(500);
+  // State for daily investment (slider) - matches the 'round-up' mental model
+  const [dailySavings, setDailySavings] = useState(50);
 
   // Assumptions
   const annualReturnRate = 0.113; // 11.3% historical return
   const currentBalance = 13000;
 
-  // Simple compound interest calculation: A = P(1+r/n)^(nt) + PMT * (((1+r/n)^(nt) - 1) / (r/n))
+  // Standard compound interest formula: A = P(1+r/n)^(nt) + PMT * (((1+r/n)^(nt) - 1) / (r/n))
   // n = 12 (monthly compound), t = years
   const calculateFutureValue = (years: number) => {
     const r = annualReturnRate;
     const n = 12;
     const t = years;
     const P = currentBalance;
-    const PMT = monthlyContribution;
+    const PMT = dailySavings * 30.42; // Convert daily to monthly (average days)
 
     const principalGrowth = P * Math.pow(1 + r / n, n * t);
     const contributionGrowth =
@@ -58,29 +58,34 @@ export function ProjectedGrowthWidget() {
       <div className="mb-8">
         <div className="flex justify-between items-end mb-4">
           <label className="text-sm font-semibold text-foreground">
-            استثمارك الشهري المتوقع
+            متوسط "الفكة" اليومي
           </label>
-          <span className="text-lg font-bold text-sukuk-green bg-sukuk-green/10 px-3 py-1 rounded-lg tabular-nums">
-            {formatEGP(monthlyContribution)}
-          </span>
+          <div className="text-right">
+            <span className="text-lg font-bold text-sukuk-green bg-sukuk-green/10 px-3 py-1 rounded-lg tabular-nums">
+              {formatEGP(dailySavings)}
+            </span>
+            <p className="text-[10px] text-muted-foreground mt-1">
+              (~{formatEGP(dailySavings * 30.42)} شهرياً)
+            </p>
+          </div>
         </div>
 
         <Slider
-          defaultValue={[500]}
-          max={5000}
-          min={50}
-          step={50}
-          value={[monthlyContribution]}
+          defaultValue={[50]}
+          max={500}
+          min={5}
+          step={5}
+          value={[dailySavings]}
           onValueChange={(vals: number | readonly number[]) => {
             const raw = Array.isArray(vals) ? vals[0] : vals;
             const num = Number(raw);
-            setMonthlyContribution(!isNaN(num) ? num : 500);
+            setDailySavings(!isNaN(num) ? num : 50);
           }}
           className="w-full cursor-grab active:cursor-grabbing"
         />
         <div className="flex justify-between mt-2 text-xs text-muted-foreground px-1">
-          <span>50 ج</span>
-          <span>5,000 ج</span>
+          <span>5 ج</span>
+          <span>500 ج</span>
         </div>
       </div>
 
@@ -103,8 +108,7 @@ export function ProjectedGrowthWidget() {
       </div>
 
       <p className="text-[10px] text-muted-foreground text-center mt-4 opacity-70">
-        *هذه أرقام تقديرية مبنية على متوسط عائد تاريخي 11.3% ولا تمثل ضماناً
-        للأرباح المستقبلية.
+        *هذه أرقام تقديرية مبنية على متوسط عائد تاريخي 11.3% للصكوك السيادية.
       </p>
     </motion.div>
   );
