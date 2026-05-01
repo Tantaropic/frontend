@@ -108,7 +108,7 @@ export function ProjectedGrowthWidget() {
       </div>
 
       <p className="text-[10px] text-muted-foreground text-center mt-4 opacity-70">
-        *هذه أرقام تقديرية مبنية على متوسط عائد تاريخي 11.3% للصكوك السيادية.
+        *هذه أرقام تقديرية مبنية على متوسط عائد تاريخي 11.3% للأسهم السيادية.
       </p>
     </motion.div>
   );

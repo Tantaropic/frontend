@@ -59,12 +59,12 @@ const INITIAL_STEPS: SimulationStep[] = [
     label: "محرك الذكاء الاصطناعي",
     description: "تحليل نمط الإنفاق وتقديم نصيحة ذكية.",
     status: "pending",
-    payload: { mood: "thrifty", nudge: "القهوة طاقة، لكن الصكوك حرية!" }
+    payload: { mood: "thrifty", nudge: "القهوة طاقة، لكن الفلوس حرية!" }
   },
   {
     id: "asset-investment",
     label: "استثمار الأصول",
-    description: "شراء وحدات صكوك في السوق الثانوية.",
+    description: "شراء وحدات فلوس في السوق الثانوية.",
     status: "pending",
     payload: { units: 0.12, ticker: "EGP_SUKUK_26" }
   }
