@@ -58,7 +58,7 @@ export function ProjectedGrowthWidget() {
       <div className="mb-8">
         <div className="flex justify-between items-end mb-4">
           <label className="text-sm font-semibold text-foreground">
-            متوسط "الفكة" اليومي
+            متوسط الفكة اليومي
           </label>
           <div className="text-right">
             <span className="text-lg font-bold text-sukuk-green bg-sukuk-green/10 px-3 py-1 rounded-lg tabular-nums">
