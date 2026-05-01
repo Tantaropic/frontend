@@ -6,11 +6,14 @@ import { mockTransactions, mockDailySummaries } from "@/data/transactions";
 import { Transaction } from "@/types";
 import { TransactionHeader } from "./components/TransactionHeader";
 import { SimulatePurchaseButton } from "./components/SimulatePurchaseButton";
-import { TransactionList, TransactionGroup } from "./components/TransactionList";
+import { TransactionList } from "./components/TransactionList";
 import { DailySummaryCard } from "./components/DailySummaryCard";
+import { useSimulation } from "@/components/simulation/SimulationContext";
+import { toast } from "sonner";
 
 export default function TransactionsPage() {
   const [transactions, setTransactions] = useState<Transaction[]>(mockTransactions);
+  const { triggerSimulation } = useSimulation();
 
   // Group transactions by date (timestamp's date part)
   const groupedTransactions = useMemo(() => {
@@ -34,24 +37,29 @@ export default function TransactionsPage() {
   }, [transactions]);
 
   const handleSimulatePurchase = () => {
-    const amount = Math.floor(Math.random() * 500) + 50;
-    const roundedAmount = Math.ceil(amount / 10) * 10;
-    const investedAmount = roundedAmount - amount;
+    triggerSimulation(() => {
+      const amount = Math.floor(Math.random() * 500) + 50;
+      const roundedAmount = Math.ceil(amount / 10) * 10;
+      const investedAmount = roundedAmount - amount;
 
-    const newTxn: Transaction = {
-      id: `sim_${Date.now()}`,
-      merchantName: "عملية شراء تجريبية",
-      merchantNameEn: "Simulated Purchase",
-      merchantCategory: "أخرى",
-      merchantIcon: "🛍️",
-      amount,
-      roundedAmount,
-      investedAmount,
-      timestamp: new Date().toISOString(),
-      status: "pending",
-    };
+      const newTxn: Transaction = {
+        id: `sim_${Date.now()}`,
+        merchantName: "عملية شراء تجريبية",
+        merchantNameEn: "Simulated Purchase",
+        merchantCategory: "أخرى",
+        merchantIcon: "🛍️",
+        amount,
+        roundedAmount,
+        investedAmount,
+        timestamp: new Date().toISOString(),
+        status: "pending",
+      };
 
-    setTransactions((prev) => [newTxn, ...prev]);
+      setTransactions((prev) => [newTxn, ...prev]);
+      toast.success("تمت إضافة المعاملة", {
+        description: `تم استثمار ${investedAmount} ج.م بنجاح.`,
+      });
+    });
   };
 
   // Get today's summary (from mock data, or derived)

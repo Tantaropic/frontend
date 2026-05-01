@@ -35,6 +35,8 @@ export const metadata: Metadata = {
 import { Toaster } from "@/components/ui/sonner";
 import { GlobalLoaderProvider } from "@/components/layout/GlobalLoaderContext";
 import { GlobalLoader } from "@/components/layout/GlobalLoader";
+import { SimulationProvider } from "@/components/simulation/SimulationContext";
+import { SimulationOverlay } from "@/components/simulation/SimulationOverlay";
 
 export default function RootLayout({
   children,
@@ -49,9 +51,12 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col antialiased">
         <GlobalLoaderProvider>
-          <GlobalLoader />
-          {children}
-          <Toaster position="top-center" theme="light" />
+          <SimulationProvider>
+            <GlobalLoader />
+            <SimulationOverlay />
+            {children}
+            <Toaster position="top-center" theme="light" />
+          </SimulationProvider>
         </GlobalLoaderProvider>
       </body>
     </html>

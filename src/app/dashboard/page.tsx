@@ -12,6 +12,7 @@ import { toast } from "sonner";
 import { GoalProgressWidget } from "./_components/GoalProgressWidget";
 import { RecentSweepsWidget } from "./_components/RecentSweepsWidget";
 import { ProjectedGrowthWidget } from "./_components/ProjectedGrowthWidget";
+import { useSimulation } from "@/components/simulation/SimulationContext";
 
 // Mock purchases for simulate button
 const MOCK_PURCHASES = [
@@ -49,15 +50,23 @@ export default function DashboardPage() {
     invested: number;
   } | null>(null);
   const [timeTraveling, setTimeTraveling] = useState(false);
+  const { triggerSimulation } = useSimulation();
 
   const handleSimulate = useCallback(() => {
-    const purchase = MOCK_PURCHASES[purchaseIdx % MOCK_PURCHASES.length];
-    setBalance((b) => b + purchase.invested);
-    setLastSimulated(purchase);
-    setPurchaseIdx((i) => i + 1);
-    // Auto-clear toast after 3s
-    setTimeout(() => setLastSimulated(null), 3000);
-  }, [purchaseIdx]);
+    triggerSimulation(() => {
+      const purchase = MOCK_PURCHASES[purchaseIdx % MOCK_PURCHASES.length];
+      setBalance((b) => b + purchase.invested);
+      setLastSimulated(purchase);
+      setPurchaseIdx((i) => i + 1);
+      
+      toast.success("تمت المحاكاة بنجاح", {
+        description: `تم استثمار ${purchase.invested} ج.م من ${purchase.merchant}`,
+      });
+
+      // Auto-clear notification after 3s
+      setTimeout(() => setLastSimulated(null), 3000);
+    });
+  }, [purchaseIdx, triggerSimulation]);
 
   const handleTimeTravel = useCallback(() => {
     if (timeTraveling) return;
