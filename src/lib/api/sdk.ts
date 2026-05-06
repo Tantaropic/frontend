@@ -13,6 +13,7 @@ import type {
   AiInsightDto,
   CreateProfileResponseDto,
   DashboardDto,
+  GoalDto,
 } from "./mappers";
 
 // ── Profiles ────────────────────────────────────────────────────────────────
@@ -131,6 +132,44 @@ export const insightsApi = {
     apiFetch<AiInsightDto[]>(endpoints.insights.forUser(userId)),
 };
 
+// ── Goals ───────────────────────────────────────────────────────────────────
+
+export interface CreateGoalRequest {
+  title: string;
+  /** EGP piasters as a numeric string (BigInt-safe). */
+  targetAmount: string;
+  emoji?: string;
+  targetDate?: string | null;
+  /** EGP piasters as a numeric string (BigInt-safe). */
+  monthlyRoundup?: string;
+  color?: string;
+  sortOrder?: number;
+}
+
+export type UpdateGoalRequest = Partial<CreateGoalRequest>;
+
+export const goalsApi = {
+  list: (userId: string) =>
+    apiFetch<GoalDto[]>(endpoints.goals.list(userId)),
+
+  create: (userId: string, body: CreateGoalRequest) =>
+    apiFetch<GoalDto[]>(endpoints.goals.list(userId), {
+      method: "POST",
+      body: JSON.stringify(body),
+    }),
+
+  update: (userId: string, goalId: string, body: UpdateGoalRequest) =>
+    apiFetch<GoalDto[]>(endpoints.goals.one(userId, goalId), {
+      method: "PATCH",
+      body: JSON.stringify(body),
+    }),
+
+  delete: (userId: string, goalId: string) =>
+    apiFetch<GoalDto[]>(endpoints.goals.one(userId, goalId), {
+      method: "DELETE",
+    }),
+};
+
 // ── Mock Bank ───────────────────────────────────────────────────────────────
 
 export interface SimulateTransactionRequest {
@@ -241,6 +280,7 @@ export const mockExchangeApi = {
 export const api = {
   profiles: profilesApi,
   users: usersApi,
+  goals: goalsApi,
   insights: insightsApi,
   mockBank: mockBankApi,
   mockExchange: mockExchangeApi,

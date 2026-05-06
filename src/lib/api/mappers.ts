@@ -1,4 +1,4 @@
-import type { Asset, Transaction } from '@/types';
+import type { Asset, Goal, GoalStatus, Transaction } from '@/types';
 import { piastersStringToEgp } from '@/lib/money';
 
 // Loose backend shapes (we don't import prisma types into the FE)
@@ -259,4 +259,55 @@ export function mapLedgerEntry(dto: LedgerEntryDto): Transaction {
     status: 'invested',
     kind,
   };
+}
+
+export interface GoalDto {
+  id: string;
+  userId: string;
+  title: string;
+  emoji: string;
+  targetAmount: string;
+  currentAmount: string;
+  remainingAmount: string;
+  progressPercent: number;
+  targetDate?: string | null;
+  monthlyRoundup: string;
+  color: string;
+  status: GoalStatus;
+  sortOrder: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export function mapGoal(dto: GoalDto): Goal {
+  const targetAmount = piastersStringToEgp(dto.targetAmount);
+  const currentAmount = piastersStringToEgp(dto.currentAmount);
+  const remainingAmount = piastersStringToEgp(dto.remainingAmount);
+
+  return {
+    id: dto.id,
+    userId: dto.userId,
+    title: dto.title,
+    emoji: dto.emoji,
+    targetAmount,
+    currentAmount,
+    remainingAmount,
+    progressPercent:
+      Number.isFinite(dto.progressPercent) && dto.progressPercent >= 0
+        ? dto.progressPercent
+        : targetAmount > 0
+          ? Math.min(100, (currentAmount / targetAmount) * 100)
+          : 0,
+    targetDate: dto.targetDate ?? null,
+    monthlyRoundup: piastersStringToEgp(dto.monthlyRoundup),
+    color: dto.color,
+    status: dto.status,
+    sortOrder: dto.sortOrder,
+    createdAt: dto.createdAt,
+    updatedAt: dto.updatedAt,
+  };
+}
+
+export function mapGoals(dtos: GoalDto[]): Goal[] {
+  return dtos.map(mapGoal);
 }

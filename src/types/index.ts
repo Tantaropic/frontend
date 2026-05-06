@@ -44,15 +44,24 @@ export interface Asset {
   color: string;                // hex color for charts
 }
 
+export type GoalStatus = "ACTIVE" | "COMPLETED" | "ARCHIVED";
+
 export interface Goal {
   id: string;
+  userId?: string;
   title: string;                // Arabic goal name
   emoji: string;
   targetAmount: number;         // EGP
   currentAmount: number;        // EGP
-  targetDate: Date | string;
+  remainingAmount?: number;     // EGP
+  progressPercent?: number;
+  targetDate?: Date | string | null;
   monthlyRoundup: number;       // estimated EGP/month from round-ups
   color: string;                // accent color for progress bar
+  status?: GoalStatus;
+  sortOrder?: number;
+  createdAt?: Date | string;
+  updatedAt?: Date | string;
 }
 
 export interface AIInsight {

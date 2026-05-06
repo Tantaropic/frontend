@@ -20,6 +20,11 @@ export const endpoints = {
     simulateWithdraw: (id: string) => `/users/${id}/simulate-withdraw`,
     simulateSell: (id: string) => `/users/${id}/simulate-sell`,
   },
+  goals: {
+    list: (userId: string) => `/users/${userId}/goals`,
+    one: (userId: string, goalId: string) =>
+      `/users/${userId}/goals/${goalId}`,
+  },
   insights: {
     forUser: (userId: string) => `/ai-insights/${userId}`,
   },
