@@ -24,7 +24,7 @@ const FEATURES = [
   {
     icon: ShieldCheck,
     title: "استثمار آمن",
-    desc: "أموالك مستثمرة في صكوك إسلامية معتمدة ومدعومة بأصول حقيقية.",
+    desc: "أموالك مستثمرة في أسهم إسلامية معتمدة ومدعومة بأصول حقيقية.",
     color: "bg-blue-50 text-blue-600",
   },
   {
@@ -103,8 +103,8 @@ export default function OnboardingPage() {
             transition={{ delay: 0.35, duration: 0.5 }}
             className="text-muted-foreground text-xl leading-relaxed mb-12 max-w-lg"
           >
-            كل عملية شراء بتقربك لهدفك — استثمر فكتك تلقائياً في صكوك إسلامية
-            متوافقة مع الشريعة
+            كل عملية شراء بتقربك لهدفك — استثمر فكتك تلقائياً في إستثمارات
+            إسلامية متوافقة مع الشريعة
           </motion.p>
 
           <motion.div
@@ -119,9 +119,9 @@ export default function OnboardingPage() {
                 className="glass flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-medium"
               >
                 <span>{p.icon}</span>
-                <ShinyText 
-                  text={p.label} 
-                  color="oklch(0.45 0.05 152)" 
+                <ShinyText
+                  text={p.label}
+                  color="oklch(0.45 0.05 152)"
                   shineColor="oklch(0.98 0.02 152)"
                   speed={3}
                 />

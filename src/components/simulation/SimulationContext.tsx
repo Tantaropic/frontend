@@ -105,6 +105,7 @@ export function SimulationProvider({ children }: { children: React.ReactNode }) 
   );
   const { identity } = useIdentity();
 
+  // eslint-disable-next-line react-hooks/preserve-manual-memoization
   const triggerSimulation = useCallback(async (onComplete?: () => void | Promise<void>) => {
     const activeSteps = buildSteps(pickScenario());
     setIsSimulating(true);

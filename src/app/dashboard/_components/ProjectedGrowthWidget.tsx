@@ -12,8 +12,8 @@ interface ProjectedGrowthWidgetProps {
 }
 
 export function ProjectedGrowthWidget({ currentBalance }: ProjectedGrowthWidgetProps) {
-  // State for monthly investment (slider) — user-controlled what-if input
-  const [monthlyContribution, setMonthlyContribution] = useState(500);
+  // State for daily round-up savings (slider) — user-controlled what-if input.
+  const [dailySavings, setDailySavings] = useState(50);
 
   // Assumption — historical sukuk benchmark (clearly disclosed below)
   const annualReturnRate = 0.113;
@@ -25,7 +25,7 @@ export function ProjectedGrowthWidget({ currentBalance }: ProjectedGrowthWidgetP
     const n = 12;
     const t = years;
     const P = currentBalance;
-    const PMT = monthlyContribution;
+    const PMT = dailySavings * 30.42;
 
     const principalGrowth = P * Math.pow(1 + r / n, n * t);
     const contributionGrowth =
@@ -62,29 +62,34 @@ export function ProjectedGrowthWidget({ currentBalance }: ProjectedGrowthWidgetP
       <div className="mb-8">
         <div className="flex justify-between items-end mb-4">
           <label className="text-sm font-semibold text-foreground">
-            استثمارك الشهري المتوقع
+            متوسط الفكة اليومي
           </label>
-          <span className="text-lg font-bold text-sukuk-green bg-sukuk-green/10 px-3 py-1 rounded-lg tabular-nums">
-            {formatEGP(monthlyContribution)}
-          </span>
+          <div className="text-right">
+            <span className="text-lg font-bold text-sukuk-green bg-sukuk-green/10 px-3 py-1 rounded-lg tabular-nums">
+              {formatEGP(dailySavings)}
+            </span>
+            <p className="text-[10px] text-muted-foreground mt-1">
+              (~{formatEGP(dailySavings * 30.42)} شهرياً)
+            </p>
+          </div>
         </div>
 
         <Slider
-          defaultValue={[500]}
-          max={5000}
-          min={50}
-          step={50}
-          value={[monthlyContribution]}
+          defaultValue={[50]}
+          max={500}
+          min={5}
+          step={5}
+          value={[dailySavings]}
           onValueChange={(vals: number | readonly number[]) => {
             const raw = Array.isArray(vals) ? vals[0] : vals;
             const num = Number(raw);
-            setMonthlyContribution(!isNaN(num) ? num : 500);
+            setDailySavings(!isNaN(num) ? num : 50);
           }}
           className="w-full cursor-grab active:cursor-grabbing"
         />
         <div className="flex justify-between mt-2 text-xs text-muted-foreground px-1">
-          <span>50 ج</span>
-          <span>5,000 ج</span>
+          <span>5 ج</span>
+          <span>500 ج</span>
         </div>
       </div>
 

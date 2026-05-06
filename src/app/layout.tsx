@@ -23,7 +23,6 @@ export const metadata: Metadata = {
   keywords: [
     "استثمار",
     "فكة",
-    "صكوك",
     "شريعة",
     "مصر",
     "MENA",

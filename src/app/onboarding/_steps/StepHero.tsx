@@ -42,7 +42,8 @@ export function StepHero({ onNext }: { onNext: () => void }) {
         transition={{ delay: 0.3, duration: 0.5 }}
         className="text-muted-foreground text-lg max-w-sm leading-relaxed mb-10"
       >
-        كل عملية شراء بتقربك لهدفك — استثمر فكتتك تلقائياً في صكوك إسلامية متوافقة مع الشريعة
+        كل عملية شراء بتقربك لهدفك — استثمر فكتتك تلقائياً في أسهم إسلامية
+        متوافقة مع الشريعة
       </motion.p>
 
       {/* Pills */}
@@ -53,7 +54,10 @@ export function StepHero({ onNext }: { onNext: () => void }) {
         className="flex flex-wrap gap-3 justify-center mb-10"
       >
         {pills.map((p) => (
-          <div key={p.label} className="glass flex items-center gap-2 px-4 py-2 rounded-full text-sm text-muted-foreground">
+          <div
+            key={p.label}
+            className="glass flex items-center gap-2 px-4 py-2 rounded-full text-sm text-muted-foreground"
+          >
             <span>{p.icon}</span>
             <span>{p.label}</span>
           </div>
@@ -61,7 +65,11 @@ export function StepHero({ onNext }: { onNext: () => void }) {
       </motion.div>
 
       {/* CTA */}
-      <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }}>
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.6 }}
+      >
         <motion.button
           onClick={onNext}
           whileHover={{ scale: 1.04, y: -2 }}

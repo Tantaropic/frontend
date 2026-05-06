@@ -28,6 +28,7 @@
 ### Step 1 — Hero Section
 
 **Components needed:**
+
 - `FloatingOrbs` — background decorative orbs
 - `GeometricPattern` — subtle background texture
 - Heading: "فلوسك بتكبر من غير ما تحس"
@@ -35,11 +36,13 @@
 - CTA button: "ابدأ رحلتك ←" → advances to Step 2
 
 **Animations:**
+
 - `motion.h1`: `fadeInUp`, delay 0ms, duration 600ms
 - `motion.p`: `fadeInUp`, delay 200ms
 - `motion.button`: `fadeInUp`, delay 400ms, `whileHover` scale 1.03
 
 **Implementation tasks:**
+
 - [ ] Create `src/app/onboarding/page.tsx` — replace stub with full component
 - [ ] Build stepper component (progress dots + step counter) — inline or extract
 - [ ] Style hero heading with `text-gradient-green` + `font-heading`
@@ -51,6 +54,7 @@
 ### Step 2 — Sign-up Form
 
 **Components needed:**
+
 - `GlassCard` wrapper
 - shadcn `Input` × 3: الاسم الكامل / البريد الإلكتروني / رقم الهاتف
 - shadcn `Label` for each field
@@ -58,10 +62,12 @@
 - "لديك حساب؟ سجّل دخولك" link (mock — no action)
 
 **Animations:**
+
 - Fields stagger: each `Input` group `fadeInUp` with 100ms interval
 - Submit button `whileHover` lift
 
 **Implementation tasks:**
+
 - [ ] Build form layout inside `GlassCard`
 - [ ] Add RTL-compatible `Input` with Arabic placeholders
 - [ ] Local state for field values (no submission — mock only)
@@ -73,17 +79,20 @@
 ### Step 3 — Bank Connection Card
 
 **Components needed:**
+
 - `GlassCard` wrapper
 - Bank logo row: Banque Misr / CIB / NBE (SVG or styled divs with names)
 - Connection status: "جاري الربط..." → "✓ تم الربط بنجاح"
 - GSAP pulse animation on the connect icon during loading state
 
 **Animations:**
+
 - GSAP `pulse-ring` on the connect icon (1.5s)
 - After 1.5s → status transitions to success (Framer Motion `AnimatePresence`)
 - Green checkmark `scale` from 0 to 1
 
 **Implementation tasks:**
+
 - [ ] Build `BankConnectionCard` component (can be inline on step)
 - [ ] `useEffect` timer: after 1500ms set `connected = true`
 - [ ] Animate status change with `AnimatePresence`
@@ -94,23 +103,27 @@
 ### Step 4 — Risk Profile Selector
 
 **Components needed:**
+
 - 3 × `AnimatedCard` arranged in a responsive row/grid
 - Each card: icon + Arabic title + description + return range
 - Selected state: green border + green background tint
 
 **Card data:**
+
 ```
-محافظ (Conservative)   → 100% صكوك         → عائد متوقع: 4–7%
-متوازن (Balanced)      → 60% صكوك / 40% ETF → عائد متوقع: 7–11%
+محافظ (Conservative)   → 100% أسهم         → عائد متوقع: 4–7%
+متوازن (Balanced)      → 60% أسهم / 40% ETF → عائد متوقع: 7–11%
 نمو (Growth)           → عقارات + أسهم       → عائد متوقع: 11–18%
 ```
 
 **Animations:**
+
 - Cards stagger entrance: 0ms / 150ms / 300ms delay
 - `whileHover` lift on unselected cards
 - Selected card: Framer Motion `layoutId` animated border highlight
 
 **Implementation tasks:**
+
 - [ ] Define `riskProfiles[]` array (inline data, 3 items)
 - [ ] Map to `AnimatedCard` with click handler
 - [ ] Track `selectedRisk` in component state
@@ -122,16 +135,19 @@
 ### Step 5 — Round-up Settings
 
 **Components needed:**
+
 - `GlassCard` wrapper
 - shadcn `Switch`: "تفعيل التقريب التلقائي" label
 - shadcn `Select`: "التقريب إلى" → أقرب 1 جنيه / 5 جنيه / 10 جنيه
 - Live preview: "شراء بـ 87 جنيه → يُستثمر 3 جنيه" (updates with multiplier)
 
 **Animations:**
+
 - Preview row animates value change with GSAP counter when multiplier changes
 - `Switch` toggles with smooth Framer Motion layout animation
 
 **Implementation tasks:**
+
 - [ ] `roundupEnabled` boolean state
 - [ ] `multiplier` state: 1 | 5 | 10
 - [ ] Live preview calculation using `calcRoundup(87, multiplier)` from `lib/utils.ts`
@@ -155,13 +171,13 @@
 
 ### Components to Build
 
-| Component | Description |
-|-----------|-------------|
-| `TransactionHeader` | Mini balance card + today's invested amount |
-| `SimulatePurchaseButton` | Adds fake transaction to list with animation |
-| `TransactionList` | Animated list of `TransactionItem` components |
-| `TransactionItem` | Merchant icon + name + amount + badge + roundup |
-| `DailySummaryCard` | Collapsible daily totals |
+| Component                | Description                                     |
+| ------------------------ | ----------------------------------------------- |
+| `TransactionHeader`      | Mini balance card + today's invested amount     |
+| `SimulatePurchaseButton` | Adds fake transaction to list with animation    |
+| `TransactionList`        | Animated list of `TransactionItem` components   |
+| `TransactionItem`        | Merchant icon + name + amount + badge + roundup |
+| `DailySummaryCard`       | Collapsible daily totals                        |
 
 ### Key Tasks
 
@@ -180,14 +196,14 @@
 
 ### Components to Build
 
-| Component | Description |
-|-----------|-------------|
-| `BalanceCard` | Hero balance with GSAP `AnimatedCounter` + shimmer effect |
-| `PortfolioChart` | Recharts `PieChart` — 3 slices (Gold/Index/HighRisk) |
-| `AssetBreakdownList` | Row per asset: name + allocation% + value + sharia badge |
-| `InsightCardsRow` | Horizontal scroll of `AIInsightCard` components |
-| `AIInsightCard` | Glassmorphism card with icon + title + highlight number |
-| `QuickActions` | 3 pill buttons: إضافة / سحب / إيقاف مؤقت |
+| Component            | Description                                               |
+| -------------------- | --------------------------------------------------------- |
+| `BalanceCard`        | Hero balance with GSAP `AnimatedCounter` + shimmer effect |
+| `PortfolioChart`     | Recharts `PieChart` — 3 slices (Gold/Index/HighRisk)      |
+| `AssetBreakdownList` | Row per asset: name + allocation% + value + sharia badge  |
+| `InsightCardsRow`    | Horizontal scroll of `AIInsightCard` components           |
+| `AIInsightCard`      | Glassmorphism card with icon + title + highlight number   |
+| `QuickActions`       | 3 pill buttons: إضافة / سحب / إيقاف مؤقت                  |
 
 ### Key Tasks
 
@@ -205,11 +221,11 @@
 
 ### Components to Build
 
-| Component | Description |
-|-----------|-------------|
-| `GoalCard` | Title + emoji + progress bar + amounts + date |
+| Component         | Description                                   |
+| ----------------- | --------------------------------------------- |
+| `GoalCard`        | Title + emoji + progress bar + amounts + date |
 | `CreateGoalModal` | shadcn `Dialog` — form: title / target / date |
-| `GoalProgressBar` | `AnimatedProgressBar` with goal color |
+| `GoalProgressBar` | `AnimatedProgressBar` with goal color         |
 
 ### Key Tasks
 
@@ -227,12 +243,12 @@
 
 ### Components to Build
 
-| Component | Description |
-|-----------|-------------|
-| `ZakatSummaryCard` | Total owed + 2.5% rate + animated counter |
+| Component               | Description                                                    |
+| ----------------------- | -------------------------------------------------------------- |
+| `ZakatSummaryCard`      | Total owed + 2.5% rate + animated counter                      |
 | `AssetEligibilityTable` | Each asset row: name / value / held months / eligible / amount |
-| `ZakatInfoSection` | Simple explainer: what is Zakat, nisab, lunar year |
-| `DonateButton` | CTA with mock confirmation toast |
+| `ZakatInfoSection`      | Simple explainer: what is Zakat, nisab, lunar year             |
+| `DonateButton`          | CTA with mock confirmation toast                               |
 
 ### Key Tasks
 
@@ -249,11 +265,11 @@
 
 ### Components to Build
 
-| Component | Description |
-|-----------|-------------|
-| `InsightCard` | Full-size version of the dashboard insight card |
-| `SpendingBehaviorChart` | Recharts `BarChart` — spending by category |
-| `EmotionalNudgeList` | Chronological list of all insights |
+| Component               | Description                                     |
+| ----------------------- | ----------------------------------------------- |
+| `InsightCard`           | Full-size version of the dashboard insight card |
+| `SpendingBehaviorChart` | Recharts `BarChart` — spending by category      |
+| `EmotionalNudgeList`    | Chronological list of all insights              |
 
 ### Key Tasks
 
@@ -280,10 +296,10 @@
 
 These will be extracted as needed during page implementation:
 
-| Component | Needed By | Priority |
-|-----------|-----------|----------|
-| `Toast / Sonner` | Zakat donate, Simulate Purchase | Medium |
-| `Accordion` | Zakat info section | Low |
-| `EmptyState` | Empty goals / transactions | Low |
-| `LoadingSkeleton` | Future API integration | Low |
-| `ConfirmDialog` | Withdraw / donate actions | Low |
+| Component         | Needed By                       | Priority |
+| ----------------- | ------------------------------- | -------- |
+| `Toast / Sonner`  | Zakat donate, Simulate Purchase | Medium   |
+| `Accordion`       | Zakat info section              | Low      |
+| `EmptyState`      | Empty goals / transactions      | Low      |
+| `LoadingSkeleton` | Future API integration          | Low      |
+| `ConfirmDialog`   | Withdraw / donate actions       | Low      |

@@ -7,7 +7,7 @@ export const mockInsights: AIInsight[] = [
     icon: "☕",
     title: "عادة القهوة بتعمل معاك",
     body: "كوباياتك الأسبوع ده كلفوا 475 جنيه — فكتتهم اشترتلك",
-    highlight: "23.75 جنيه صكوك",
+    highlight: "23.75 جنيه",
     timestamp: "2026-04-27T08:00:00Z",
   },
   {
