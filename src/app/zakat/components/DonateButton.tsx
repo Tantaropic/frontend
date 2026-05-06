@@ -11,9 +11,9 @@ interface DonateButtonProps {
 
 export function DonateButton({ amount }: DonateButtonProps) {
   const handleDonate = () => {
-    toast.success("تم إخراج زكاتك بنجاح", {
-      description: `تقبل الله منك. تم خصم ${amount} جنيه وتوجيهها للمصارف الشرعية.`,
-      duration: 5000,
+    toast("فيچر قادم قريبًا ⚡", {
+      description: "إخراج الزكاة تلقائيًا للمصارف المعتمدة لسه تحت التطوير.",
+      duration: 4000,
     });
   };
 

@@ -19,8 +19,9 @@ export function formatEGP(amount: number, compact = false): string {
 }
 
 /** Format percentage */
-export function formatPercent(value: number): string {
-  return `${value > 0 ? "+" : ""}${value.toFixed(1)}%`;
+export function formatPercent(value: number, fractionDigits = 1): string {
+  if (!Number.isFinite(value)) return "0%";
+  return `${value > 0 ? "+" : ""}${value.toFixed(fractionDigits)}%`;
 }
 
 /** Round up to nearest multiplier */

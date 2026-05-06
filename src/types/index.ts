@@ -8,6 +8,16 @@ export type RiskProfile = "conservative" | "balanced" | "growth";
 
 export type TransactionStatus = "pending" | "invested";
 
+/** What kind of activity this entry represents (drives FE labelling). */
+export type TransactionKind =
+  | "sweep"        // round-up from a purchase
+  | "deposit"      // user added cash
+  | "withdrawal"   // user withdrew cash
+  | "buy"          // investment allocation
+  | "sell"         // investment redemption
+  | "fee"          // platform fee
+  | "other";
+
 export interface Transaction {
   id: string;
   merchantName: string;         // Arabic merchant name
@@ -19,6 +29,7 @@ export interface Transaction {
   investedAmount: number;       // roundedAmount - amount
   timestamp: Date | string;
   status: TransactionStatus;
+  kind?: TransactionKind;
 }
 
 export interface Asset {

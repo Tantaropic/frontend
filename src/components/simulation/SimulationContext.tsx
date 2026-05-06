@@ -1,8 +1,11 @@
 "use client";
 
 import React, { createContext, useContext, useState, useCallback } from "react";
+import { ApiError } from "@/lib/api/types";
+import { api } from "@/lib/api/sdk";
+import { useIdentity } from "@/components/providers/IdentityProvider";
 
-export type SimulationStepStatus = "pending" | "active" | "completed";
+export type SimulationStepStatus = "pending" | "active" | "completed" | "failed";
 
 export interface SimulationStep {
   id: string;
@@ -18,72 +21,115 @@ interface SimulationContextProps {
   setIsXRayMode: (val: boolean) => void;
   currentStepId: string | null;
   steps: SimulationStep[];
-  triggerSimulation: (onComplete?: () => void) => void;
+  triggerSimulation: (onComplete?: () => void | Promise<void>) => void;
 }
 
 const SimulationContext = createContext<SimulationContextProps | undefined>(
   undefined
 );
 
-const INITIAL_STEPS: SimulationStep[] = [
-  {
-    id: "bank-api",
-    label: "واجهة البنك (API)",
-    description: "تم رصد عملية شراء جديدة عند نقطة البيع.",
-    status: "pending",
-    payload: { txn_id: "TXN_7721", amount: 46.50, merchant: "Starbucks" }
-  },
-  {
-    id: "webhook",
-    label: "مستقبل البيانات",
-    description: "استلام بيانات العملية المشفرة من بوابة الدفع.",
-    status: "pending",
-    payload: { status: "received", provider: "Stripe/Fawry" }
-  },
-  {
-    id: "roundup-engine",
-    label: "محرك التقريب",
-    description: "حساب الفكة لأقرب 10 جنيهات مصرية.",
-    status: "pending",
-    payload: { original: 46.50, rounded: 50.00, sweep: 3.50 }
-  },
-  {
-    id: "fee-engine",
-    label: "محرك الرسوم",
-    description: "خصم مصاريف التشغيل (1.5%) وتجهيز المبلغ.",
-    status: "pending",
-    payload: { fee: 0.05, net_investment: 3.45 }
-  },
-  {
-    id: "ai-emotional-engine",
-    label: "محرك الذكاء الاصطناعي",
-    description: "تحليل نمط الإنفاق وتقديم نصيحة ذكية.",
-    status: "pending",
-    payload: { mood: "thrifty", nudge: "القهوة طاقة، لكن الصكوك حرية!" }
-  },
-  {
-    id: "asset-investment",
-    label: "استثمار الأصول",
-    description: "شراء وحدات صكوك في السوق الثانوية.",
-    status: "pending",
-    payload: { units: 0.12, ticker: "EGP_SUKUK_26" }
-  }
-];
+const SIMULATION_SCENARIOS = [
+  { merchantTag: "coffee_shop", merchant: "مقهى وسط البلد", amount: 47, asset: "GOLD", note: "الفكة الصغيرة بدأت إنجاز جديد" },
+  { merchantTag: "grocery", merchant: "سوبرماركت العائلة", amount: 183, asset: "INDEX_FUND", note: "التسوق اليومي قربك خطوة" },
+  { merchantTag: "ride_share", merchant: "رحلة مواصلات", amount: 92, asset: "HIGH_RISK", note: "المشاوير كمان بتبني محفظتك" },
+  { merchantTag: "pharmacy", merchant: "صيدلية الحي", amount: 126, asset: "GOLD", note: "مصروف ضروري وفكة مفيدة" },
+  { merchantTag: "food_delivery", merchant: "طلب أكل", amount: 214, asset: "INDEX_FUND", note: "طلب سريع وفكة أذكى" },
+  { merchantTag: "online_shopping", merchant: "تسوق أونلاين", amount: 338, asset: "HIGH_RISK", note: "الشراء اتحول لفرصة" },
+] as const;
+
+function pickScenario() {
+  return SIMULATION_SCENARIOS[
+    Math.floor(Math.random() * SIMULATION_SCENARIOS.length)
+  ];
+}
+
+function buildSteps(scenario: (typeof SIMULATION_SCENARIOS)[number]): SimulationStep[] {
+  const rounded = Math.ceil(scenario.amount / 10) * 10;
+  const sweep = rounded - scenario.amount;
+  const fee = Number((sweep * 0.015).toFixed(2));
+  const net = Number(Math.max(0, sweep - fee).toFixed(2));
+  const units = Number((net / 100).toFixed(4));
+
+  return [
+    {
+      id: "bank-api",
+      label: "واجهة البنك",
+      description: `عملية شراء جديدة من ${scenario.merchant}.`,
+      status: "pending",
+      payload: { amount: scenario.amount, merchant: scenario.merchantTag },
+    },
+    {
+      id: "webhook",
+      label: "مستقبل البيانات",
+      description: "استلام العملية وربطها بالمستخدم الحالي.",
+      status: "pending",
+      payload: { status: "received", merchant: scenario.merchant },
+    },
+    {
+      id: "roundup-engine",
+      label: "محرك التقريب",
+      description: `تقريب ${scenario.amount} إلى ${rounded} جنيه.`,
+      status: "pending",
+      payload: { original: scenario.amount, rounded, sweep },
+    },
+    {
+      id: "fee-engine",
+      label: "محرك الرسوم",
+      description: "تجهيز صافي الفكة للاستثمار.",
+      status: "pending",
+      payload: { fee, net_investment: net },
+    },
+    {
+      id: "ai-emotional-engine",
+      label: "محرك الإنجازات",
+      description: "تسجيل أثر العملية على إنجازات المحفظة.",
+      status: "pending",
+      payload: { achievement: scenario.note },
+    },
+    {
+      id: "asset-investment",
+      label: "استثمار الأصول",
+      description: "توزيع صافي الفكة على الأصول المتاحة.",
+      status: "pending",
+      payload: { units, asset: scenario.asset },
+    },
+  ];
+}
 
 export function SimulationProvider({ children }: { children: React.ReactNode }) {
   const [isSimulating, setIsSimulating] = useState(false);
   const [isXRayMode, setIsXRayMode] = useState(false);
   const [currentStepId, setCurrentStepId] = useState<string | null>(null);
-  const [steps, setSteps] = useState<SimulationStep[]>(INITIAL_STEPS);
+  const [steps, setSteps] = useState<SimulationStep[]>(() =>
+    buildSteps(SIMULATION_SCENARIOS[0]),
+  );
+  const { identity } = useIdentity();
 
-  const triggerSimulation = useCallback(async (onComplete?: () => void) => {
+  const triggerSimulation = useCallback(async (onComplete?: () => void | Promise<void>) => {
+    const activeSteps = buildSteps(pickScenario());
     setIsSimulating(true);
     setCurrentStepId(null);
-    setSteps(INITIAL_STEPS.map((s) => ({ ...s, status: "pending" })));
+    setSteps(activeSteps.map((s) => ({ ...s, status: "pending" })));
+
+    // Fire the real backend call in parallel with the UI animation.
+    // Pass the real userId so the webhook hits an existing record.
+    const backendCall = api.mockBank
+      .simulateTransaction(
+        identity?.userId
+          ? {
+              userId: identity.userId,
+              amount: activeSteps[0].payload?.amount as number,
+              merchantTag: activeSteps[0].payload?.merchant as string,
+            }
+          : {},
+      )
+      .catch((err: unknown) => err);
+
+    let backendFailed: Error | null = null;
 
     // Simulation sequence
-    for (let i = 0; i < INITIAL_STEPS.length; i++) {
-      const step = INITIAL_STEPS[i];
+    for (let i = 0; i < activeSteps.length; i++) {
+      const step = activeSteps[i];
       setCurrentStepId(step.id);
       setSteps((prev) =>
         prev.map((s, idx) =>
@@ -94,9 +140,26 @@ export function SimulationProvider({ children }: { children: React.ReactNode }) 
       // Duration for each step to visualize packet travel
       await new Promise((resolve) => setTimeout(resolve, 1500));
 
+      // On the final step, await the backend result so failures show up.
+      if (i === activeSteps.length - 1) {
+        const result = await backendCall;
+        if (result instanceof Error) {
+          backendFailed =
+            result instanceof ApiError ? result : new Error(String(result));
+        }
+      }
+
       setSteps((prev) =>
         prev.map((s, idx) =>
-          idx === i ? { ...s, status: "completed" } : s
+          idx === i
+            ? {
+                ...s,
+                status:
+                  backendFailed && i === activeSteps.length - 1
+                    ? "failed"
+                    : "completed",
+              }
+            : s
         )
       );
 
@@ -109,8 +172,8 @@ export function SimulationProvider({ children }: { children: React.ReactNode }) 
     await new Promise((resolve) => setTimeout(resolve, 1000));
     setIsSimulating(false);
     setCurrentStepId(null);
-    onComplete?.();
-  }, []);
+    if (!backendFailed) onComplete?.();
+  }, [identity?.userId]);
 
   return (
     <SimulationContext.Provider

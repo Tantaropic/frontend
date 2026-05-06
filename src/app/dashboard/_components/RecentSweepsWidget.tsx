@@ -1,14 +1,18 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { mockTransactions } from "@/data/transactions";
 import { Clock, ChevronLeft } from "lucide-react";
 import Link from "next/link";
 import { formatEGP } from "@/lib/utils";
+import type { Transaction } from "@/types";
 
 import { useEffect, useState } from "react";
 
-export function RecentSweepsWidget() {
+interface RecentSweepsWidgetProps {
+  ledger?: Transaction[];
+}
+
+export function RecentSweepsWidget({ ledger = [] }: RecentSweepsWidgetProps) {
   const [isPulsing, setIsPulsing] = useState(false);
 
   useEffect(() => {
@@ -20,9 +24,16 @@ export function RecentSweepsWidget() {
     return () => window.removeEventListener("simulation:roundup-engine", handleRoundup);
   }, []);
 
-  // Get latest 3 transactions that actually invested something
-  const recentSweeps = mockTransactions
-    .filter((t) => t.investedAmount > 0)
+  // Latest 3 user-facing entries (sweep / deposit / buy). Hide internal fees.
+  const recentSweeps = ledger
+    .filter(
+      (t) =>
+        t.investedAmount > 0 &&
+        (t.kind === "sweep" ||
+          t.kind === "buy" ||
+          t.kind === "deposit" ||
+          t.kind === "sell"),
+    )
     .slice(0, 3);
 
   return (

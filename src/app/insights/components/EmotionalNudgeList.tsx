@@ -10,15 +10,19 @@ interface EmotionalNudgeListProps {
   insights: AIInsight[];
 }
 
-type TabValue = "all" | "habit" | "milestone" | "zakat";
+type TabValue = "all" | "alerts" | "milestone" | "zakat";
 
 export function EmotionalNudgeList({ insights }: EmotionalNudgeListProps) {
   const [activeTab, setActiveTab] = useState<TabValue>("all");
 
   const filteredInsights = insights.filter((insight) => {
     if (activeTab === "all") return true;
-    // Nudge and Habit are grouped together for simplicity, but let's strictly check based on design
-    if (activeTab === "habit" && (insight.type === "habit" || insight.type === "nudge")) return true;
+    if (
+      activeTab === "alerts" &&
+      (insight.type === "habit" || insight.type === "nudge")
+    ) {
+      return true;
+    }
     return insight.type === activeTab;
   });
 
@@ -35,7 +39,7 @@ export function EmotionalNudgeList({ insights }: EmotionalNudgeListProps) {
         >
           <TabsList className="grid grid-cols-4 w-full sm:w-auto bg-white/50 backdrop-blur-sm border border-border h-10">
             <TabsTrigger value="all" className="font-medium">الكل</TabsTrigger>
-            <TabsTrigger value="habit" className="font-medium">عادات</TabsTrigger>
+            <TabsTrigger value="alerts" className="font-medium">تنبيهات</TabsTrigger>
             <TabsTrigger value="milestone" className="font-medium">إنجازات</TabsTrigger>
             <TabsTrigger value="zakat" className="font-medium">زكاة</TabsTrigger>
           </TabsList>

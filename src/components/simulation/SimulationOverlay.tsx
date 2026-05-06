@@ -30,10 +30,10 @@ export function SimulationOverlay() {
             </div>
             <div>
               <h2 className="text-white font-heading font-bold text-2xl tracking-tight">
-                محاكاة النظام الذكي
+                محاكاة عملية شراء
               </h2>
               <p className="text-white/40 text-xs uppercase tracking-widest font-mono">
-                تتبع التنفيذ اللحظي للبنية التحتية
+                live transaction flow
               </p>
             </div>
           </div>

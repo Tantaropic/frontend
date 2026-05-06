@@ -1,25 +1,32 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { TrendingUp, Zap } from "lucide-react";
+import { LoaderCircle, TrendingUp, Zap } from "lucide-react";
 import { gsap } from "gsap";
-import { toast } from "sonner";
 
 import { useSimulation } from "@/components/simulation/SimulationContext";
+import { formatPercent } from "@/lib/utils";
+import type { Transaction } from "@/types";
 
 interface BalanceCardProps {
   balance: number;
+  /** Cash sitting in the wallet (uninvested). */
+  pendingCash?: number;
   returnRate: number;
   onSimulate: () => void;
-  lastSimulated?: { merchant: string; invested: number } | null;
+  /** Real ledger entries from the backend; aggregates are derived from these. */
+  ledger?: Transaction[];
 }
+
+// (Aggregation now uses entry.kind directly — no string set lookup.)
 
 export function BalanceCard({
   balance,
+  pendingCash = 0,
   returnRate,
   onSimulate,
-  lastSimulated,
+  ledger = [],
 }: BalanceCardProps) {
   const balanceRef = useRef<HTMLSpanElement>(null);
   const prevBalance = useRef(0);
@@ -56,29 +63,37 @@ export function BalanceCard({
     });
   }, [balance]);
 
-  const [todayInvested, setTodayInvested] = useState(18);
-  const [monthInvested, setMonthInvested] = useState(340);
-  const [totalOps, setTotalOps] = useState(47);
+  // Derive real aggregates from the actual ledger.
+  // We only count user-initiated *inflows* (deposits + sweeps), not the
+  // downstream INVESTMENT_ALLOCATION rows the allocator emits per slice —
+  // those would double-count what's already represented by the deposit/sweep.
+  const stats = useMemo(() => {
+    const now = new Date();
+    const todayKey = now.toDateString();
+    const monthKey = `${now.getFullYear()}-${now.getMonth()}`;
 
-  useEffect(() => {
-    if (lastSimulated) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setTodayInvested((prev) => prev + lastSimulated.invested);
-      setMonthInvested((prev) => prev + lastSimulated.invested);
-      setTotalOps((prev) => prev + 1);
-
-      toast.success(lastSimulated.merchant, {
-        description: `+${lastSimulated.invested} جنيه مُستثمرة ✓`,
-        duration: 3000,
-      });
+    let today = 0;
+    let month = 0;
+    let totalOps = 0;
+    for (const entry of ledger) {
+      const isInflow =
+        entry.kind === "deposit" || entry.kind === "sweep";
+      if (!isInflow) continue;
+      if (entry.investedAmount <= 0) continue;
+      totalOps += 1;
+      const d = new Date(entry.timestamp);
+      if (d.toDateString() === todayKey) today += entry.investedAmount;
+      if (`${d.getFullYear()}-${d.getMonth()}` === monthKey)
+        month += entry.investedAmount;
     }
-  }, [lastSimulated]);
+    return { today, month, total: totalOps };
+  }, [ledger]);
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
-      animate={{ 
-        opacity: 1, 
+      animate={{
+        opacity: 1,
         y: 0,
         scale: isSparkling ? [1, 1.05, 1] : 1
       }}
@@ -87,8 +102,8 @@ export function BalanceCard({
       style={{
         background:
           "linear-gradient(135deg, oklch(0.38 0.15 152), oklch(0.50 0.14 152) 50%, oklch(0.44 0.13 165))",
-        boxShadow: isSparkling 
-          ? "0 30px 80px oklch(0.60 0.20 152 / 60%)" 
+        boxShadow: isSparkling
+          ? "0 30px 80px oklch(0.60 0.20 152 / 60%)"
           : "0 20px 60px oklch(0.48 0.14 152 / 35%)",
       }}
     >
@@ -135,19 +150,28 @@ export function BalanceCard({
             )}
           </AnimatePresence>
         </div>
-        <div className="flex items-center gap-1.5 text-emerald-300 mb-6">
+        <div className="flex items-center gap-1.5 text-emerald-300 mb-2">
           <TrendingUp size={14} />
           <span className="text-sm font-medium">
-            +{returnRate.toFixed(1)}% العائد السنوي
+            {formatPercent(returnRate, 2)} العائد الحالي
           </span>
         </div>
+        {pendingCash > 0 && (
+          <div className="inline-flex items-center gap-1.5 text-amber-200 bg-amber-500/15 border border-amber-300/30 rounded-full px-3 py-1 text-xs font-medium mb-6">
+            <span>⏳</span>
+            <span>
+              {pendingCash.toLocaleString("ar-EG")} جنيه في انتظار الاستثمار
+            </span>
+          </div>
+        )}
+        {pendingCash <= 0 && <div className="mb-6" />}
 
         {/* Stats */}
         <div className="grid grid-cols-3 gap-4 pt-5 border-t border-white/20 mb-6">
           {[
-            { label: "مُستثمر اليوم", value: `${todayInvested} جنيه` },
-            { label: "هذا الشهر", value: `${monthInvested} جنيه` },
-            { label: "إجمالي العمليات", value: `${totalOps}` },
+            { label: "مُستثمر اليوم", value: `${stats.today} جنيه` },
+            { label: "هذا الشهر", value: `${stats.month} جنيه` },
+            { label: "إجمالي العمليات", value: `${stats.total}` },
           ].map((s) => (
             <div key={s.label}>
               <p className="text-white/55 text-xs mb-0.5">{s.label}</p>
@@ -186,16 +210,20 @@ export function BalanceCard({
         <motion.button
           onClick={onSimulate}
           disabled={isSimulating}
-          whileHover={{ scale: 1.03, y: -1 }}
+          whileHover={{ scale: 1.01, y: -1 }}
           whileTap={{ scale: 0.97 }}
-          className={`flex items-center gap-2 border rounded-xl px-4 py-2.5 text-sm font-semibold transition-all duration-200 ${
+          className={`flex w-full items-center justify-center gap-2 border rounded-2xl px-4 py-3 text-sm font-semibold transition-all duration-200 ${
             isSimulating
-            ? "bg-white/5 border-white/5 text-white/20"
-            : "bg-white/15 hover:bg-white/25 border-white/25 text-white"
+            ? "bg-white/10 border-white/10 text-white/45"
+            : "bg-white text-emerald-900 hover:bg-emerald-50 border-white/70 shadow-lg shadow-black/10"
           }`}
         >
-          <Zap size={16} className={isSimulating ? "text-white/20" : "text-yellow-300"} />
-          <span>{isSimulating ? "جاري معالجة العملية..." : "محاكاة عملية شراء"}</span>
+          {isSimulating ? (
+            <LoaderCircle size={17} className="animate-spin" />
+          ) : (
+            <Zap size={17} className="text-amber-500" />
+          )}
+          <span>{isSimulating ? "جاري معالجة الشراء..." : "محاكاة عملية شراء"}</span>
         </motion.button>
       </div>
     </motion.div>

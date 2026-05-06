@@ -18,7 +18,7 @@ const NODES = [
   { id: "fee-engine", label: "Fee Engine", x: 700, y: 100, icon: Database },
   {
     id: "ai-emotional-engine",
-    label: "AI Engine",
+    label: "Achievements",
     x: 500,
     y: 250,
     icon: Brain,
@@ -95,7 +95,7 @@ export function XRayDiagram() {
               <motion.circle
                 cx={node.x}
                 cy={node.y}
-                r="30"
+                r={30}
                 fill={
                   isActive
                     ? "#059669"
@@ -105,8 +105,13 @@ export function XRayDiagram() {
                 }
                 stroke={isActive ? "#34d399" : "#3f3f46"}
                 strokeWidth="2"
-                animate={isActive ? { r: [30, 35, 30] } : {}}
-                transition={{ repeat: Infinity, duration: 1 }}
+                animate={isActive ? { scale: [1, 1.16, 1] } : { scale: 1 }}
+                style={{ transformOrigin: `${node.x}px ${node.y}px` }}
+                transition={
+                  isActive
+                    ? { repeat: Infinity, duration: 1 }
+                    : { duration: 0.2 }
+                }
               />
               <foreignObject
                 x={node.x - 15}
@@ -166,7 +171,7 @@ export function XRayDiagram() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
-            className="absolute bottom-12 left-1/2 -translate-x-1/2 bg-neutral-900/80 backdrop-blur-md px-8 py-4 rounded-2xl border border-white/20 text-center"
+            className="absolute bottom-8 left-1/2 w-[min(92vw,720px)] -translate-x-1/2 bg-neutral-900/90 backdrop-blur-md px-5 py-4 rounded-2xl border border-white/20 text-center shadow-2xl"
           >
             <h4 className="text-sukuk-green font-bold uppercase tracking-widest text-xs mb-1">
               العملية الحالية

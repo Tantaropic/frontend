@@ -6,13 +6,17 @@ import { Slider } from "@/components/ui/slider";
 import { formatEGP } from "@/lib/utils";
 import { Calculator } from "lucide-react";
 
-export function ProjectedGrowthWidget() {
-  // State for monthly investment (slider)
+interface ProjectedGrowthWidgetProps {
+  /** Real wallet balance in EGP. */
+  currentBalance: number;
+}
+
+export function ProjectedGrowthWidget({ currentBalance }: ProjectedGrowthWidgetProps) {
+  // State for monthly investment (slider) — user-controlled what-if input
   const [monthlyContribution, setMonthlyContribution] = useState(500);
 
-  // Assumptions
-  const annualReturnRate = 0.113; // 11.3% historical return
-  const currentBalance = 13000;
+  // Assumption — historical sukuk benchmark (clearly disclosed below)
+  const annualReturnRate = 0.113;
 
   // Simple compound interest calculation: A = P(1+r/n)^(nt) + PMT * (((1+r/n)^(nt) - 1) / (r/n))
   // n = 12 (monthly compound), t = years

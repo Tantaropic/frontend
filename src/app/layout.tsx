@@ -37,6 +37,7 @@ import { GlobalLoaderProvider } from "@/components/layout/GlobalLoaderContext";
 import { GlobalLoader } from "@/components/layout/GlobalLoader";
 import { SimulationProvider } from "@/components/simulation/SimulationContext";
 import { SimulationOverlay } from "@/components/simulation/SimulationOverlay";
+import { IdentityProvider } from "@/components/providers/IdentityProvider";
 
 export default function RootLayout({
   children,
@@ -50,14 +51,16 @@ export default function RootLayout({
       className={`${ibmPlexArabic.variable} ${tajawal.variable} h-full scroll-smooth`}
     >
       <body className="min-h-full flex flex-col antialiased">
-        <GlobalLoaderProvider>
-          <SimulationProvider>
-            <GlobalLoader />
-            <SimulationOverlay />
-            {children}
-            <Toaster position="top-center" theme="light" />
-          </SimulationProvider>
-        </GlobalLoaderProvider>
+        <IdentityProvider>
+          <GlobalLoaderProvider>
+            <SimulationProvider>
+              <GlobalLoader />
+              <SimulationOverlay />
+              {children}
+              <Toaster position="top-center" theme="light" />
+            </SimulationProvider>
+          </GlobalLoaderProvider>
+        </IdentityProvider>
       </body>
     </html>
   );

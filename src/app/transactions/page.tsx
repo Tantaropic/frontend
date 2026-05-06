@@ -1,74 +1,55 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useMemo } from "react";
 import { AppShell } from "@/components/layout/AppShell";
-import { mockTransactions, mockDailySummaries } from "@/data/transactions";
-import { Transaction } from "@/types";
 import { TransactionHeader } from "./components/TransactionHeader";
 import { SimulatePurchaseButton } from "./components/SimulatePurchaseButton";
 import { TransactionList } from "./components/TransactionList";
 import { DailySummaryCard } from "./components/DailySummaryCard";
 import { useSimulation } from "@/components/simulation/SimulationContext";
-import { toast } from "sonner";
+import { useIdentity } from "@/components/providers/IdentityProvider";
+import { useDashboard } from "@/app/dashboard/_hooks/useDashboard";
+import { useSse } from "@/lib/api/useSse";
 
 export default function TransactionsPage() {
-  const [transactions, setTransactions] = useState<Transaction[]>(mockTransactions);
+  const { identity } = useIdentity();
+  const { data, loading, error, refetch } = useDashboard(identity?.userId);
   const { triggerSimulation } = useSimulation();
 
-  // Group transactions by date (timestamp's date part)
-  const groupedTransactions = useMemo(() => {
-    const groups: Record<string, Transaction[]> = {};
-    transactions.forEach((txn) => {
-      // Extract YYYY-MM-DD
-      const dateKey = new Date(txn.timestamp).toISOString().split("T")[0];
-      if (!groups[dateKey]) {
-        groups[dateKey] = [];
-      }
-      groups[dateKey].push(txn);
-    });
+  // Real-time refresh on any wallet/transactions event.
+  useSse(identity?.userId, (msg) => {
+    if (msg.channel === "wallet" || msg.channel === "transactions") {
+      void refetch();
+    }
+  });
 
-    // Convert to array and sort by date descending
+  const transactions = useMemo(() => data?.ledger ?? [], [data?.ledger]);
+
+  const groupedTransactions = useMemo(() => {
+    const groups: Record<string, typeof transactions> = {};
+    for (const txn of transactions) {
+      const dateKey = new Date(txn.timestamp).toISOString().split("T")[0];
+      (groups[dateKey] ??= []).push(txn);
+    }
     return Object.keys(groups)
       .sort((a, b) => new Date(b).getTime() - new Date(a).getTime())
-      .map((date) => ({
-        date,
-        transactions: groups[date], // already in order of insertion if prepended
-      }));
+      .map((date) => ({ date, transactions: groups[date] }));
   }, [transactions]);
 
   const handleSimulatePurchase = () => {
-    triggerSimulation(() => {
-      const amount = Math.floor(Math.random() * 500) + 50;
-      const roundedAmount = Math.ceil(amount / 10) * 10;
-      const investedAmount = roundedAmount - amount;
-
-      const newTxn: Transaction = {
-        id: `sim_${Date.now()}`,
-        merchantName: "عملية شراء تجريبية",
-        merchantNameEn: "Simulated Purchase",
-        merchantCategory: "أخرى",
-        merchantIcon: "🛍️",
-        amount,
-        roundedAmount,
-        investedAmount,
-        timestamp: new Date().toISOString(),
-        status: "pending",
-      };
-
-      setTransactions((prev) => [newTxn, ...prev]);
-      toast.success("تمت إضافة المعاملة", {
-        description: `تم استثمار ${investedAmount} ج.م بنجاح.`,
-      });
+    triggerSimulation(async () => {
+      await refetch();
     });
   };
 
-  // Get today's summary (from mock data, or derived)
-  // For the sake of the demo, we'll use the first one from mockDailySummaries
-  // and maybe update its invested amount based on simulations.
-  const todaySummary = mockDailySummaries[0];
-  const totalInvestedToday = 
-    todaySummary.totalInvested + 
-    transactions.filter(t => t.id.startsWith("sim_")).reduce((sum, t) => sum + t.investedAmount, 0);
+  const today = new Date().toDateString();
+  // Match the dashboard's BalanceCard logic: only inflows count as "مستثمر اليوم".
+  // Investment-allocation rows would double-count what the deposit/sweep already represents.
+  const todays = transactions.filter((t) => {
+    if (new Date(t.timestamp).toDateString() !== today) return false;
+    return t.kind === "deposit" || t.kind === "sweep";
+  });
+  const totalInvestedToday = todays.reduce((sum, t) => sum + t.investedAmount, 0);
 
   return (
     <AppShell>
@@ -78,15 +59,20 @@ export default function TransactionsPage() {
         </h1>
 
         <TransactionHeader todayTotalInvested={totalInvestedToday} />
-        
+
         <SimulatePurchaseButton onSimulate={handleSimulatePurchase} />
 
-        <DailySummaryCard 
-          date={todaySummary.date}
-          totalPurchases={todaySummary.totalPurchases}
+        <DailySummaryCard
+          date={new Date().toISOString()}
+          totalPurchases={todays.length}
           totalInvested={totalInvestedToday}
-          transactionCount={todaySummary.transactionCount + transactions.filter(t => t.id.startsWith("sim_")).length}
+          transactionCount={todays.length}
         />
+
+        {loading && (
+          <p className="text-sm text-muted-foreground mt-4">جاري التحميل...</p>
+        )}
+        {error && <p className="text-sm text-red-600 mt-4">{error}</p>}
 
         <TransactionList groups={groupedTransactions} />
       </div>
