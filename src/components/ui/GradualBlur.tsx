@@ -116,11 +116,14 @@ const getGradientDirection = (position: string): string => {
   return directions[position] || 'to bottom';
 };
 
-const debounce = <T extends (...a: any[]) => void>(fn: T, wait: number) => {
+const debounce = <Args extends unknown[]>(
+  fn: (...args: Args) => void,
+  wait: number,
+) => {
   let t: ReturnType<typeof setTimeout>;
-  return (...a: Parameters<T>) => {
+  return (...args: Args) => {
     clearTimeout(t);
-    t = setTimeout(() => fn(...a), wait);
+    t = setTimeout(() => fn(...args), wait);
   };
 };
 

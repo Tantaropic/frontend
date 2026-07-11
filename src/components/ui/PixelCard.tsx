@@ -175,6 +175,8 @@ interface VariantConfig {
   noFocus: boolean;
 }
 
+type PixelAnimationName = 'appear' | 'disappear';
+
 export default function PixelCard({
   variant = 'default',
   gap,
@@ -188,7 +190,7 @@ export default function PixelCard({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const pixelsRef = useRef<Pixel[]>([]);
   const animationRef = useRef<ReturnType<typeof requestAnimationFrame> | null>(null);
-  const timePreviousRef = useRef(performance.now());
+  const timePreviousRef = useRef(0);
 
   const variantCfg: VariantConfig = VARIANTS[variant] || VARIANTS.default;
   const finalGap = gap ?? variantCfg.gap;
@@ -227,9 +229,11 @@ export default function PixelCard({
     pixelsRef.current = pxs;
   };
 
-  const doAnimate = (fnName: keyof Pixel) => {
-    animationRef.current = requestAnimationFrame(() => doAnimate(fnName));
-    const timeNow = performance.now();
+  const doAnimate = (fnName: PixelAnimationName, timeNow: number) => {
+    animationRef.current = requestAnimationFrame(nextTime => doAnimate(fnName, nextTime));
+    if (timePreviousRef.current === 0) {
+      timePreviousRef.current = timeNow;
+    }
     const timePassed = timeNow - timePreviousRef.current;
     const timeInterval = 1000 / 60;
 
@@ -244,7 +248,6 @@ export default function PixelCard({
     let allIdle = true;
     for (let i = 0; i < pixelsRef.current.length; i++) {
       const pixel = pixelsRef.current[i];
-      // @ts-ignore
       pixel[fnName]();
       if (!pixel.isIdle) {
         allIdle = false;
@@ -255,11 +258,12 @@ export default function PixelCard({
     }
   };
 
-  const handleAnimation = (name: keyof Pixel) => {
+  const handleAnimation = (name: PixelAnimationName) => {
     if (animationRef.current !== null) {
       cancelAnimationFrame(animationRef.current);
     }
-    animationRef.current = requestAnimationFrame(() => doAnimate(name));
+    timePreviousRef.current = 0;
+    animationRef.current = requestAnimationFrame(time => doAnimate(name, time));
   };
 
   const onMouseEnter = () => handleAnimation('appear');

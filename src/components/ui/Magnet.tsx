@@ -30,7 +30,6 @@ const Magnet: React.FC<MagnetProps> = ({
 
   useEffect(() => {
     if (disabled) {
-      setPosition({ x: 0, y: 0 });
       return;
     }
 
@@ -61,7 +60,8 @@ const Magnet: React.FC<MagnetProps> = ({
     };
   }, [padding, disabled, magnetStrength]);
 
-  const transitionStyle = isActive ? activeTransition : inactiveTransition;
+  const transitionStyle = isActive && !disabled ? activeTransition : inactiveTransition;
+  const renderedPosition = disabled ? { x: 0, y: 0 } : position;
 
   return (
     <div
@@ -73,7 +73,7 @@ const Magnet: React.FC<MagnetProps> = ({
       <div
         className={innerClassName}
         style={{
-          transform: `translate3d(${position.x}px, ${position.y}px, 0)`,
+          transform: `translate3d(${renderedPosition.x}px, ${renderedPosition.y}px, 0)`,
           transition: transitionStyle,
           willChange: 'transform'
         }}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -56,19 +56,38 @@ export function SellAssetModal({
   onClose,
   onConfirm,
 }: SellAssetModalProps) {
+  return (
+    <AnimatePresence>
+      {open && option && (
+        <SellAssetPanel
+          key={option.assetId}
+          option={option}
+          busy={busy}
+          onClose={onClose}
+          onConfirm={onConfirm}
+        />
+      )}
+    </AnimatePresence>
+  );
+}
+
+function SellAssetPanel({
+  option,
+  busy,
+  onClose,
+  onConfirm,
+}: {
+  option: SellAssetOption;
+  busy: boolean;
+  onClose: () => void;
+  onConfirm: SellAssetModalProps["onConfirm"];
+}) {
   const [mode, setMode] = useState<SellMode>("amount");
   const [value, setValue] = useState("");
 
-  useEffect(() => {
-    if (open) {
-      setMode("amount");
-      setValue("");
-    }
-  }, [open, option?.assetId]);
-
   const numericValue = Number(value);
   const estimated = useMemo(() => {
-    if (!option || !Number.isFinite(numericValue) || numericValue <= 0) {
+    if (!Number.isFinite(numericValue) || numericValue <= 0) {
       return { amount: 0, fee: 0, netAmount: 0, units: 0 };
     }
 
@@ -99,7 +118,6 @@ export function SellAssetModal({
   }, [mode, numericValue, option]);
 
   const isValid =
-    !!option &&
     Number.isFinite(numericValue) &&
     numericValue > 0 &&
     (mode === "amount"
@@ -107,7 +125,7 @@ export function SellAssetModal({
       : numericValue <= option.units + 0.00000001);
 
   const handleSubmit = async () => {
-    if (!option || !isValid || busy) return;
+    if (!isValid || busy) return;
     await onConfirm({
       assetClass: option.assetClass,
       ...(mode === "amount"
@@ -117,7 +135,6 @@ export function SellAssetModal({
   };
 
   const handleMax = () => {
-    if (!option) return;
     setValue(
       mode === "amount"
         ? option.maxAmountEgp.toFixed(2)
@@ -126,23 +143,21 @@ export function SellAssetModal({
   };
 
   return (
-    <AnimatePresence>
-      {open && option && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4"
-          onClick={onClose}
-        >
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 16 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 8 }}
-            transition={{ duration: 0.18, ease: "easeOut" }}
-            onClick={(event) => event.stopPropagation()}
-            className="relative w-full max-w-md rounded-2xl border border-border bg-background p-6 shadow-2xl"
-          >
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4"
+      onClick={onClose}
+    >
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95, y: 16 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.95, y: 8 }}
+        transition={{ duration: 0.18, ease: "easeOut" }}
+        onClick={(event) => event.stopPropagation()}
+        className="relative w-full max-w-md rounded-2xl border border-border bg-background p-6 shadow-2xl"
+      >
             <button
               onClick={onClose}
               aria-label="إغلاق"
@@ -270,9 +285,7 @@ export function SellAssetModal({
                 {busy ? "جاري البيع..." : "تأكيد البيع"}
               </Button>
             </div>
-          </motion.div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+      </motion.div>
+    </motion.div>
   );
 }

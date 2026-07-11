@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -28,11 +28,34 @@ export function AmountModal({
   onConfirm,
   onClose,
 }: AmountModalProps) {
-  const [value, setValue] = useState<string>(String(defaultValue));
+  return (
+    <AnimatePresence>
+      {open && (
+        <AmountModalPanel
+          key={defaultValue}
+          title={title}
+          description={description}
+          confirmLabel={confirmLabel}
+          defaultValue={defaultValue}
+          busy={busy}
+          onConfirm={onConfirm}
+          onClose={onClose}
+        />
+      )}
+    </AnimatePresence>
+  );
+}
 
-  useEffect(() => {
-    if (open) setValue(String(defaultValue));
-  }, [open, defaultValue]);
+function AmountModalPanel({
+  title,
+  description,
+  confirmLabel,
+  defaultValue,
+  busy,
+  onConfirm,
+  onClose,
+}: Omit<AmountModalProps, "open">) {
+  const [value, setValue] = useState<string>(String(defaultValue));
 
   const amount = Number(value);
   const isValid = Number.isFinite(amount) && amount > 0;
@@ -43,23 +66,21 @@ export function AmountModal({
   };
 
   return (
-    <AnimatePresence>
-      {open && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4"
-          onClick={onClose}
-        >
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 16 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 8 }}
-            transition={{ duration: 0.18, ease: "easeOut" }}
-            onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-sm bg-background rounded-2xl border border-border shadow-2xl p-6 relative"
-          >
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4"
+      onClick={onClose}
+    >
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95, y: 16 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.95, y: 8 }}
+        transition={{ duration: 0.18, ease: "easeOut" }}
+        onClick={(e) => e.stopPropagation()}
+        className="w-full max-w-sm bg-background rounded-2xl border border-border shadow-2xl p-6 relative"
+      >
             <button
               onClick={onClose}
               aria-label="إغلاق"
@@ -110,9 +131,7 @@ export function AmountModal({
                 {busy ? "جاري التنفيذ..." : confirmLabel}
               </Button>
             </div>
-          </motion.div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+      </motion.div>
+    </motion.div>
   );
 }

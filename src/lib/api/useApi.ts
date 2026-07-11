@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { ApiError } from "@/lib/api/types";
 
 interface State<T> {
@@ -29,30 +29,46 @@ export function useApi<T>(
     loading: false,
     error: null,
   });
+  const queryRef = useRef(query);
+  const depsKey = deps.map((dep) => String(dep)).join("\u001f");
+
+  useEffect(() => {
+    queryRef.current = query;
+  });
 
   const run = useCallback(async () => {
     if (!enabled) return;
     setState((s) => ({ ...s, loading: true, error: null }));
     try {
-      const data = await query();
+      const data = await queryRef.current();
       setState({ data, loading: false, error: null });
     } catch (err) {
       const message =
         err instanceof ApiError ? err.message : "تعذّر تنفيذ الطلب";
       setState({ data: null, loading: false, error: message });
     }
-    // query is intentionally re-derived from deps by the caller
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [enabled, ...deps]);
+  }, [enabled]);
 
   useEffect(() => {
-    void run();
-    if (!pollMs || !enabled) return;
+    let cancelled = false;
+    queueMicrotask(() => {
+      if (!cancelled) void run();
+    });
+
+    if (!pollMs || !enabled) {
+      return () => {
+        cancelled = true;
+      };
+    }
+
     const id = setInterval(() => {
       void run();
     }, pollMs);
-    return () => clearInterval(id);
-  }, [run, pollMs, enabled]);
+    return () => {
+      cancelled = true;
+      clearInterval(id);
+    };
+  }, [run, pollMs, enabled, depsKey]);
 
   return { ...state, refetch: run };
 }

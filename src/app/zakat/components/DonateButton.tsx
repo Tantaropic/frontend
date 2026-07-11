@@ -4,12 +4,14 @@ import { Button } from "@/components/ui/button";
 import { HeartHandshake } from "lucide-react";
 import { toast } from "sonner";
 import { GlassCard } from "@/components/ui/GlassCard";
+import { formatEGP } from "@/lib/utils";
 
 interface DonateButtonProps {
   amount: number;
 }
 
 export function DonateButton({ amount }: DonateButtonProps) {
+  const formattedAmount = formatEGP(amount);
   const handleDonate = () => {
     toast("فيچر قادم قريبًا ⚡", {
       description: "إخراج الزكاة تلقائيًا للمصارف المعتمدة لسه تحت التطوير.",
@@ -32,7 +34,7 @@ export function DonateButton({ amount }: DonateButtonProps) {
         className="w-full sm:w-auto min-w-[200px] bg-sukuk-green hover:bg-sukuk-green-light text-white text-base shadow-md"
       >
         <HeartHandshake className="me-2 h-5 w-5" />
-        إخراج الزكاة الآن
+        إخراج {formattedAmount} الآن
       </Button>
     </GlassCard>
   );
